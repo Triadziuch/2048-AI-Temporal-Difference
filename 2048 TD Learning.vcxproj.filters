@@ -13,10 +13,117 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Pliki nagłówkowe\MovementManager">
+      <UniqueIdentifier>{110d36dc-d4f5-4d26-b068-7d7922a60cb0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Pliki źródłowe\MovementManager">
+      <UniqueIdentifier>{89b770e0-5022-4080-ac3c-3207cd9f777c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Pliki nagłówkowe\2048">
+      <UniqueIdentifier>{39938194-9c17-481c-b761-6e4ab7442d24}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Pliki źródłowe\2048">
+      <UniqueIdentifier>{00c9e5f1-fff9-4cdc-8d1d-6b5ffd93c22c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="2048 TD Learning.cpp">
       <Filter>Pliki źródłowe</Filter>
     </ClCompile>
+    <ClCompile Include="src\Game.cpp">
+      <Filter>Pliki źródłowe</Filter>
+    </ClCompile>
+    <ClCompile Include="src\main.cpp">
+      <Filter>Pliki źródłowe</Filter>
+    </ClCompile>
+    <ClCompile Include="src\MovementManager\easeFunctions.cpp">
+      <Filter>Pliki źródłowe\MovementManager</Filter>
+    </ClCompile>
+    <ClCompile Include="src\MovementManager\MovementContainer.cpp">
+      <Filter>Pliki źródłowe\MovementManager</Filter>
+    </ClCompile>
+    <ClCompile Include="src\MovementManager\MovementManager.cpp">
+      <Filter>Pliki źródłowe\MovementManager</Filter>
+    </ClCompile>
+    <ClCompile Include="src\MovementManager\RoutineContainer.cpp">
+      <Filter>Pliki źródłowe\MovementManager</Filter>
+    </ClCompile>
+    <ClCompile Include="src\MovementManager\transformationInfo.cpp">
+      <Filter>Pliki źródłowe\MovementManager</Filter>
+    </ClCompile>
+    <ClCompile Include="src\MovementManager\TransformationRoutine.cpp">
+      <Filter>Pliki źródłowe\MovementManager</Filter>
+    </ClCompile>
+    <ClCompile Include="src\MovementManager\VertexArray2.cpp">
+      <Filter>Pliki źródłowe\MovementManager</Filter>
+    </ClCompile>
+    <ClCompile Include="src\AssetManager.cpp">
+      <Filter>Pliki źródłowe\2048</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GUI.cpp">
+      <Filter>Pliki źródłowe\2048</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Playground.cpp">
+      <Filter>Pliki źródłowe\2048</Filter>
+    </ClCompile>
+    <ClCompile Include="src\StandardCursor.cpp">
+      <Filter>Pliki źródłowe\2048</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Tile.cpp">
+      <Filter>Pliki źródłowe\2048</Filter>
+    </ClCompile>
+    <ClCompile Include="src\TileMatrix.cpp">
+      <Filter>Pliki źródłowe\2048</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Agent.cpp">
+      <Filter>Pliki źródłowe</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\Game.h">
+      <Filter>Pliki nagłówkowe</Filter>
+    </ClInclude>
+    <ClInclude Include="src\MovementManager\easeFunctions.h">
+      <Filter>Pliki nagłówkowe\MovementManager</Filter>
+    </ClInclude>
+    <ClInclude Include="src\MovementManager\MovementContainer.h">
+      <Filter>Pliki nagłówkowe\MovementManager</Filter>
+    </ClInclude>
+    <ClInclude Include="src\MovementManager\MovementManager.h">
+      <Filter>Pliki nagłówkowe\MovementManager</Filter>
+    </ClInclude>
+    <ClInclude Include="src\MovementManager\RoutineContainer.h">
+      <Filter>Pliki nagłówkowe\MovementManager</Filter>
+    </ClInclude>
+    <ClInclude Include="src\MovementManager\transformationInfo.h">
+      <Filter>Pliki nagłówkowe\MovementManager</Filter>
+    </ClInclude>
+    <ClInclude Include="src\MovementManager\TransformationRoutine.h">
+      <Filter>Pliki nagłówkowe\MovementManager</Filter>
+    </ClInclude>
+    <ClInclude Include="src\MovementManager\VertexArray2.h">
+      <Filter>Pliki nagłówkowe\MovementManager</Filter>
+    </ClInclude>
+    <ClInclude Include="src\AssetManager.h">
+      <Filter>Pliki nagłówkowe\2048</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GUI.h">
+      <Filter>Pliki nagłówkowe\2048</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Playground.h">
+      <Filter>Pliki nagłówkowe\2048</Filter>
+    </ClInclude>
+    <ClInclude Include="src\StandardCursor.h">
+      <Filter>Pliki nagłówkowe\2048</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Tile.h">
+      <Filter>Pliki nagłówkowe\2048</Filter>
+    </ClInclude>
+    <ClInclude Include="src\TileMatrix.h">
+      <Filter>Pliki nagłówkowe\2048</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Agent.h">
+      <Filter>Pliki nagłówkowe</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
