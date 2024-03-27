@@ -1,3 +1,5 @@
+#pragma once
+#include "Agent.h"
 #include "Playground.h"
 #include "StandardCursor.h"
 #include "AssetManager.h"
@@ -18,8 +20,9 @@ private:
 	sf::RenderWindow*			window;
 
 	// Other variables
-	bool				isEnd			= false;
-	bool				isGameOver		= false;
+	bool isEnd		= false;
+	bool isGameOver	= false;
+	bool isLearning = true;
 	Playground*			playground;
 	AssetManager manager;
 
@@ -31,6 +34,9 @@ private:
 	void initWindow();
 	void initVariables();
 	void initAssets();
+
+	// AI Agent
+	Agent *agent;
 
 public:
 	// Constructors / Destructors

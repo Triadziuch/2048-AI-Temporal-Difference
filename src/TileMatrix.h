@@ -3,6 +3,7 @@
 #include "MovementManager/MovementManager.h"
 #include "Tile.h"
 #include "AssetManager.h"
+#include "State.h"
 
 struct MoveInstructions {
 	sf::Vector2i m_newPos, m_oldPos;
@@ -97,6 +98,9 @@ public:
 	int getAddedScore() const;
 
 	void setAddedScore(const int score);
+
+	// AI functions
+	const State& getState() const;
 
 	// Rendering tiles
 	void render(sf::RenderTarget& target);

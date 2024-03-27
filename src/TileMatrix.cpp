@@ -558,6 +558,18 @@ void TileMatrix::setAddedScore(const int value)
 	m_addedScore = value;
 }
 
+const State& TileMatrix::getState() const
+{
+	State state;
+	for (size_t i = 0; i < m_matrixWidth; ++i)
+		for (size_t j = 0; j < m_matrixHeight; ++j)
+			if (m_matrix[i][j])
+				state.board[j][i] = findID(m_matrix[i][j]->getType());
+			else
+				state.board[j][i] = 0;
+	return state;
+}
+
 // Rendering tiles
 void TileMatrix::render(sf::RenderTarget& target)
 {

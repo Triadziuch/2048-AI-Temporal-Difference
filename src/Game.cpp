@@ -17,6 +17,7 @@ void Game::initVariables()
 {
 	srand(static_cast<unsigned>(time(nullptr)));
 	playground = new Playground({ static_cast<float>(WINDOW_WIDTH), static_cast<float>(WINDOW_HEIGHT) });
+	agent = new Agent(playground);
 }
 
 void Game::initAssets()
@@ -57,14 +58,22 @@ void Game::update() {
 	
 	if (!isEnd) {
 		playground->update(dt);
-		if (!isGameOver) {
-			updateMousePositions();
-			updatePollEvents();
-			updateGameOver();
+
+		if (!isLearning) {
+			if (!isGameOver) {
+				updateMousePositions();
+				updatePollEvents();
+				updateGameOver();
+			}
+			else {
+				updateMousePositions();
+				updatePollEvents();
+			}
 		}
 		else {
 			updateMousePositions();
 			updatePollEvents();
+			agent->update(dt);
 		}
 	}
 }

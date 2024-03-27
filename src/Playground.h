@@ -38,6 +38,9 @@ public:
 	const bool getIsMoving() const { return m_tileMatrix->getIsMoving(); }
 	sf::FloatRect getNewGameButton() { return m_gui->getNewGameButton(); }
 	const bool getIsGameOver() const { return m_tileMatrix->getIsGameOver(); }
+	
+	// AI functions
+	TileMatrix* getTileMatrix() { return m_tileMatrix; }
 
 	// Rendering playground
 	void render (sf::RenderTarget& target);
