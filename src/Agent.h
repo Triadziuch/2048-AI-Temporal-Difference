@@ -24,6 +24,8 @@ private:
 
 	LUTContainer m_LUTs;
 
+	const State& getState() const;
+
 public:
 	Agent(Playground* playgroundPtr);
 
