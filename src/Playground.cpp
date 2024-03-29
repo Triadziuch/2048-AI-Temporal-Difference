@@ -1,3 +1,4 @@
+#pragma once
 #include "Playground.h"
 
 Playground::Playground(const sf::Vector2f& windowSize)

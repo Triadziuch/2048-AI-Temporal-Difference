@@ -1,7 +1,6 @@
+#pragma once
 #include "TileMatrix.h"
 #include "GUI.h"
-
-using namespace std;
 
 class Playground {
 private:

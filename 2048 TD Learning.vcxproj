@@ -140,7 +140,6 @@
     <ClCompile Include="src\AssetManager.cpp" />
     <ClCompile Include="src\Game.cpp" />
     <ClCompile Include="src\GUI.cpp" />
-    <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\MovementManager\easeFunctions.cpp" />
     <ClCompile Include="src\MovementManager\MovementContainer.cpp" />
     <ClCompile Include="src\MovementManager\MovementManager.cpp" />

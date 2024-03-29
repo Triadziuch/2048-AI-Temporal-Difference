@@ -9,7 +9,7 @@ class Game
 {
 private:
 	// Window variables
-	const string				WINDOW_TITLE		= "2048";
+	const std::string			WINDOW_TITLE		= "2048";
 	const unsigned int			WINDOW_WIDTH		= 1280;
 	const unsigned int			WINDOW_HEIGHT		= 720;
 	const unsigned int			FRAMERATE			= 60;

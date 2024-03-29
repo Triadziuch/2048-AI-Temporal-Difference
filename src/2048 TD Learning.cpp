@@ -1,9 +1,10 @@
-﻿#include "Agent.h"
+﻿#pragma once
+#include "Game.h"
 
 int main()
 {
-    Agent agent;
-    agent.run();
+    Game game;
+    game.run();
 
     return 0;
 }

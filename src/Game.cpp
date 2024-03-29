@@ -23,7 +23,7 @@ void Game::initVariables()
 void Game::initAssets()
 {
 	for(int i = 1; i < 13; i++)
-		AssetManager::GetTexture("bin/Textures/" + to_string(static_cast<int>(pow(2, i))) + ".png");
+		AssetManager::GetTexture("bin/Textures/" + std::to_string(static_cast<int>(pow(2, i))) + ".png");
 	AssetManager::GetTexture("bin/Textures/button_newgame.png");
 	AssetManager::GetTexture("bin/Textures/button_score.png");
 }
@@ -95,7 +95,7 @@ void Game::updatePollEvents()
 				
 		if (!isEnd) {
 			if (!isGameOver) 
-				if (ev.type == sf::Event::KeyPressed) 
+				if (ev.type == sf::Event::KeyPressed && !isLearning)
 					playground->move(ev.key.code);
 
 			

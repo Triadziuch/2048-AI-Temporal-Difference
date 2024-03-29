@@ -560,7 +560,7 @@ void TileMatrix::setAddedScore(const int value)
 
 const State& TileMatrix::getState() const
 {
-	State state;
+	State state(m_matrixWidth, m_matrixHeight);
 	for (size_t i = 0; i < m_matrixWidth; ++i)
 		for (size_t j = 0; j < m_matrixHeight; ++j)
 			if (m_matrix[i][j])
