@@ -100,7 +100,7 @@ public:
 	void setAddedScore(const int score);
 
 	// AI functions
-	const State& getState() const;
+	const State* const getState() const;
 
 	// Rendering tiles
 	void render(sf::RenderTarget& target);
