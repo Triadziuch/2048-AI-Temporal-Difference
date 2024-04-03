@@ -23,7 +23,9 @@ private:
 	const int findFreeSpace(const sf::Vector2i& pos, const Taction& direction);
 	void addMoveInstructions(const sf::Vector2i& newPos, const sf::Vector2i& oldPos);
 	bool m_mergedTiles = false;
+
 	const int m_maxType = 4096;
+	bool debug = false;
 
 public:
 	size_t WIDTH{}, HEIGHT{};

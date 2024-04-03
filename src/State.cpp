@@ -264,17 +264,19 @@ State::~State()
 
 float State::move(Taction direction)
 {
-	if (direction == Taction::UP)
-		printf("\n\n\nMove direction: UP\n\n");
-	else if (direction == Taction::DOWN)
-		printf("\n\n\nMove direction: DOWN\n\n");
-	else if (direction == Taction::LEFT)
-		printf("\n\n\nMove direction: LEFT\n\n");
-	else if (direction == Taction::RIGHT)
-		printf("\n\n\nMove direction: RIGHT\n\n");
+	if (debug) {
+		if (direction == Taction::UP)
+			printf("\n\n\nMove direction: UP\n\n");
+		else if (direction == Taction::DOWN)
+			printf("\n\n\nMove direction: DOWN\n\n");
+		else if (direction == Taction::LEFT)
+			printf("\n\n\nMove direction: LEFT\n\n");
+		else if (direction == Taction::RIGHT)
+			printf("\n\n\nMove direction: RIGHT\n\n");
 
-	/*display("Board before:");
-	printf("\n");*/
+		display("Board before:");
+		printf("\n");
+	}
 
 	if (direction == Taction::UP) {
 		for (int i = 0; i < WIDTH; ++i)
@@ -353,8 +355,10 @@ float State::move(Taction direction)
 		delete m_moveInstructions[i];
 	m_moveInstructions.clear();
 
-	/*display("Board after:");
-	printf("Reward: %f\n\n\n", move_reward);*/
+	if (debug) {
+		display("Board after:");
+		printf("Reward: %f\n\n\n", move_reward);
+	}
 	
 	return move_reward;
 }
