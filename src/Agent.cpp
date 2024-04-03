@@ -11,12 +11,7 @@ float Agent::get_state_value(const State* const state) const
     float value = 0.0f;
     
     // Displaying state
-    for (size_t i = 0; i < state->HEIGHT; ++i) {
-		for (size_t j = 0; j < state->WIDTH; ++j) {
-			std::cout << state->board[i][j] << " ";
-		}
-		std::cout << std::endl;
-	}
+	//state->display();
 
     for (size_t i = 0; i < LUTContainer::NUM_VERTICAL; ++i) 
         for (size_t j = 0; j < state->WIDTH; ++j)
@@ -65,6 +60,7 @@ Agent::Agent(Playground* playgroundPtr) : playground(playgroundPtr), matrix{ pla
 void Agent::update(const float dt)
 {
 	const State* current_state = getState();
+	playground->update(dt);
 
 	if (!playground->getIsGameOver()) {
         printf("Value: %f\n", get_state_value(current_state));

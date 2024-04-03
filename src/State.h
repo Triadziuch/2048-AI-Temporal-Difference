@@ -23,6 +23,7 @@ private:
 	const int findFreeSpace(const sf::Vector2i& pos, const Taction& direction);
 	void addMoveInstructions(const sf::Vector2i& newPos, const sf::Vector2i& oldPos);
 	bool m_mergedTiles = false;
+	const int m_maxType = 4096;
 
 public:
 	size_t WIDTH{}, HEIGHT{};
@@ -33,6 +34,8 @@ public:
 	~State();
 
 	float move(Taction direction);
+
+	const void display(const std::string& text = "") const;
 
 	int **board;
 	bool **board_moving;

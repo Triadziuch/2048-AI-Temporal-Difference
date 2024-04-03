@@ -95,7 +95,7 @@ void Game::updatePollEvents()
 				
 		if (!isEnd) {
 			if (!isGameOver) 
-				if (ev.type == sf::Event::KeyPressed && !isLearning)
+				if (ev.type == sf::Event::KeyPressed && isLearning)
 					playground->move(ev.key.code);
 
 			
