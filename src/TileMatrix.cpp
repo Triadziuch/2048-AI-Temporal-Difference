@@ -229,7 +229,6 @@ int TileMatrix::findFreeRight(const sf::Vector2i& pos)
 				return i;
 		return pos.x;
 	}
-
 }
 
 int TileMatrix::findFreeUp(const sf::Vector2i& pos)
@@ -565,9 +564,9 @@ const State* const TileMatrix::getState() const
 	for (size_t i = 0; i < m_matrixWidth; ++i) {
 		for (size_t j = 0; j < m_matrixHeight; ++j) {
 			if (m_matrix[i][j]) 
-				state->board[j][i] = findID(m_matrix[i][j]->getType()) + 1;
+				state->board[i][j] = findID(m_matrix[i][j]->getType()) + 1;
 			else 
-				state->board[j][i] = 0;
+				state->board[i][j] = 0;
 		}
 	}
 		

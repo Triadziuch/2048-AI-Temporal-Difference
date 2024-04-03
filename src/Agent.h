@@ -23,12 +23,12 @@ class Agent
 private:
 	Playground* playground;
 	TileMatrix* matrix;
-
 	LUTContainer m_LUTs;
 
 	const State* const getState() const;
 
-	float get_state_value(const State* const state, const LUTContainer* const LUT) const;
+	float get_state_value(const State* const state) const;
+	Taction getBestAction(const State* const state) const;
 
 public:
 	Agent(Playground* playgroundPtr);
