@@ -557,7 +557,7 @@ void TileMatrix::setAddedScore(const int value)
 	m_addedScore = value;
 }
 
-const State* const TileMatrix::getState() const
+State* const TileMatrix::getState() const
 {
 	State* state = new State(m_matrixWidth, m_matrixHeight);
 

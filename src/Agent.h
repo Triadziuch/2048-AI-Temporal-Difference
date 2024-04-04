@@ -18,6 +18,14 @@ public:
 	float SQUARE_LUT[NUM_SQUARES][MAX_TYPE + 1][MAX_TYPE + 1][MAX_TYPE + 1][MAX_TYPE + 1]{ 0.1f };
 };
 
+struct MoveResult
+{
+	float reward;
+	State* afterstate, *next_state;
+
+	MoveResult() : reward(0.0f), afterstate(nullptr), next_state(nullptr) {}
+};
+
 class Agent
 {
 private:
@@ -25,10 +33,15 @@ private:
 	TileMatrix* matrix;
 	LUTContainer m_LUTs;
 
-	const State* const getState() const;
+	bool learning_enabled = true;
+
+	State* const getState() const;
 
 	float get_state_value(const State* const state) const;
-	Taction getBestAction(const State* const state) const;
+	Taction evaluate(const State* const state) const;
+	MoveResult make_move(State* const state, const Taction action);
+
+	void learn_evaluation(const State* const state, const Taction action, const float reward, const State* const afterstate, const State* const next_state);
 
 public:
 	Agent(Playground* playgroundPtr);
