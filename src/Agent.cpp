@@ -32,7 +32,8 @@ float Agent::get_state_value(const State* const state) const
     return value;
 }
 
-Taction Agent::evaluate(const State* const state) const
+// EVALUATE(s) -> a
+Taction Agent::evaluate(const State* const state) const // TRZEBA SPRAWDZIÆ CZY NA PEWNO WYBIERA MO¯LIWY RUCH
 {
 	float best_value = -std::numeric_limits<float>::infinity();
 	Taction best_action = Taction::UP;
@@ -41,7 +42,7 @@ Taction Agent::evaluate(const State* const state) const
 		State* new_state = new State(*state);
 		Taction action = static_cast<Taction>(i);
 
-		float reward = new_state->move(action); // COMPUTE AFTERSTATE
+		float reward = new_state->move(action); // COMPUTE AFTERSTATE 
 
 		float value = get_state_value(new_state); // V(s')
 		if (value + reward > best_value) {
@@ -55,14 +56,17 @@ Taction Agent::evaluate(const State* const state) const
 	return best_action;
 }
 
-MoveResult Agent::make_move(State* const state, const Taction action)
+// MAKE MOVE(s, a) -> r, s', s"
+MoveResult Agent::make_move(const State* const state, const Taction action)
 {
 	// current_state = s -> s'
 	// state = s -> s"
 
 	MoveResult result;
-	result.reward = state->move(action); // COMPUTE AFTERSTATE
-	result.afterstate = state;
+
+	ComputeAfterstateResult afterstate_result = compute_afterstate(state, action);
+	result.reward = afterstate_result.reward; // r
+	result.afterstate = afterstate_result.afterstate; // s'
 
 	if (action == Taction::UP) 
 		playground->move(sf::Keyboard::Up);
@@ -85,6 +89,12 @@ void Agent::learn_evaluation(const State* const state, const Taction action, con
 	// reward		=	r
 	// afterstate	=	s'
 	// next_state	=	s"
+
+	Taction	a_next = evaluate(next_state); // a_next
+	ComputeAfterstateResult	afterstate_next = compute_afterstate(next_state, a_next);
+
+	State* afterstate_next = afterstate_next.afterstate; // s'_next
+	float reward_next = afterstate_next.reward;			 // r_next
 	
 	// V(s) = V(s) + alpha * (r + V(s') - V(s))
 	float alpha = 0.1f;
@@ -95,21 +105,31 @@ void Agent::learn_evaluation(const State* const state, const Taction action, con
 	value = value + alpha * (reward + afterstate_value - value);
 }
 
+// COMPUTE AFTERSTATE(s, a) -> r, s'
+ComputeAfterstateResult Agent::compute_afterstate(const State* const state, const Taction action)
+{
+	State *afterstate = new State(*state); // DODAÆ DELETE
+	float reward = afterstate->move(action);
+
+	return ComputeAfterstateResult(reward, afterstate);
+}
+
 Agent::Agent(Playground* playgroundPtr) : playground(playgroundPtr), matrix{ playground->getTileMatrix() } {}
 
 void Agent::update(const float dt)
 {
-	State* current_state = getState();
 	playground->update(dt);
+	const State* current_state = getState(); // s
 
 	if (!playground->getIsGameOver() && !playground->getIsMoving()) {
         printf("Value: %f\n", get_state_value(current_state));
-		Taction best_action = evaluate(current_state);
-		MoveResult result = make_move(current_state, best_action);
 
-		float reward = result.reward;			// r
+		Taction best_action = evaluate(current_state); // a
+
+		MoveResult result = make_move(current_state, best_action);
 		State* afterstate = result.afterstate;	// s'
 		State* next_state = result.next_state;	// s"
+		float reward = result.reward;			// r
 
 		if (learning_enabled)
 			learn_evaluation(current_state, best_action, reward, afterstate, next_state);
