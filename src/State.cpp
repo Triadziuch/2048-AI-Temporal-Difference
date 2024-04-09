@@ -260,6 +260,10 @@ State::~State()
 	delete[] board;
 	delete[] board_moving;
 	delete[] board_merging;
+
+	for (size_t i = 0; i < m_moveInstructions.size(); ++i)
+		delete m_moveInstructions[i];
+	m_moveInstructions.clear();
 }
 
 float State::move(Taction direction)
@@ -328,6 +332,17 @@ float State::move(Taction direction)
 	}
 
 	float move_reward = 0.f;
+	if (m_moveInstructions.size() == 0) {
+		for (size_t i = 0; i < HEIGHT; ++i)
+			for (size_t j = 0; j < WIDTH; ++j) {
+				board_moving[i][j] = false;
+				board_merging[i][j] = false;
+			}
+
+		return -5.f;
+	}
+		
+
 	for (size_t i = 0; i < m_moveInstructions.size(); ++i) {
 		if (m_moveInstructions[i]->m_merge) {
 			const sf::Vector2i new_pos = m_moveInstructions[i]->getNewPos();
@@ -335,7 +350,9 @@ float State::move(Taction direction)
 			
 			board[new_pos.x][new_pos.y] = board[old_pos.x][old_pos.y] + 1;
 			board[old_pos.x][old_pos.y] = 0;
-			move_reward += board[new_pos.x][new_pos.y];
+
+			if (board[new_pos.x][new_pos.y] > 0)
+				move_reward += pow(2, board[new_pos.x][new_pos.y]);
 		}
 		else {
 			const sf::Vector2i new_pos = m_moveInstructions[i]->getNewPos();
@@ -361,6 +378,101 @@ float State::move(Taction direction)
 	}
 	
 	return move_reward;
+}
+
+bool State::isMovePossible(Taction direction)
+{
+	if (direction == Taction::UP) {
+		for (int i = 0; i < WIDTH; ++i)
+			for (int j = 0; j < HEIGHT; ++j)
+				if (board[i][j] != 0) {
+					const sf::Vector2i new_pos{ i, findFreeSpace(sf::Vector2i(i, j), direction) };
+					const int distance = j - new_pos.y;
+
+					if (distance > 0) {
+						for (size_t i = 0; i < HEIGHT; ++i)
+							for (size_t j = 0; j < WIDTH; ++j) {
+								board_moving[i][j] = false;
+								board_merging[i][j] = false;
+							}
+
+						for (size_t i = 0; i < m_moveInstructions.size(); ++i)
+							delete m_moveInstructions[i];
+						m_moveInstructions.clear();
+
+						return true;
+					}
+				}
+	}
+	else if (direction == Taction::DOWN) {
+		for (int i = 0; i < WIDTH; ++i)
+			for (int j = HEIGHT - 1; j >= 0; --j)
+				if (board[i][j] != 0) {
+					const sf::Vector2i new_pos{ i, findFreeSpace(sf::Vector2i(i, j), direction) };
+					const int distance = new_pos.y - j;
+
+					if (distance > 0) {
+						for (size_t i = 0; i < HEIGHT; ++i)
+							for (size_t j = 0; j < WIDTH; ++j) {
+								board_moving[i][j] = false;
+								board_merging[i][j] = false;
+							}
+
+						for (size_t i = 0; i < m_moveInstructions.size(); ++i)
+							delete m_moveInstructions[i];
+						m_moveInstructions.clear();
+
+						return true;
+					}
+				}
+	}
+	else if (direction == Taction::LEFT) {
+		for (int j = 0; j < HEIGHT; ++j)
+			for (int i = 0; i < WIDTH; ++i)
+				if (board[i][j] != 0) {
+					const sf::Vector2i new_pos{ findFreeSpace(sf::Vector2i(i, j), direction), j };
+					const int distance = i - new_pos.x;
+
+					if (distance > 0) {
+						for (size_t i = 0; i < HEIGHT; ++i)
+							for (size_t j = 0; j < WIDTH; ++j) {
+								board_moving[i][j] = false;
+								board_merging[i][j] = false;
+							}
+
+						for (size_t i = 0; i < m_moveInstructions.size(); ++i)
+							delete m_moveInstructions[i];
+						m_moveInstructions.clear();
+
+						return true;
+					}
+				}
+	}
+	else if (direction == Taction::RIGHT) {
+		for (int j = 0; j < HEIGHT; ++j)
+			for (int i = WIDTH - 1; i >= 0; --i)
+				if (board[i][j] != 0) {
+					const sf::Vector2i new_pos{ findFreeSpace(sf::Vector2i(i, j), direction), j };
+					const int distance = new_pos.x - i;
+
+					if (distance > 0) {
+						for (size_t i = 0; i < HEIGHT; ++i)
+							for (size_t j = 0; j < WIDTH; ++j) {
+								board_moving[i][j] = false;
+								board_merging[i][j] = false;
+							}
+
+						for (size_t i = 0; i < m_moveInstructions.size(); ++i)
+							delete m_moveInstructions[i];
+						m_moveInstructions.clear();
+
+						return true;
+					}
+						
+				}
+	}
+
+	return false;
 }
 
 const void State::display(const std::string& text) const

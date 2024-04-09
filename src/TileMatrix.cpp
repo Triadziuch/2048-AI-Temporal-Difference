@@ -324,6 +324,89 @@ void TileMatrix::moveDown()
 					addMoveInstructions(new_pos, sf::Vector2i{ i, j });
 				}
 			}
+	m_movementManager->update(1.f);
+	for (size_t i = 0; i < m_matrixHeight; ++i)
+		for (size_t j = 0; j < m_matrixWidth; ++j)
+			if (m_matrix[i][j])
+				m_matrix[i][j]->update(1.f);
+	endMove();
+}
+
+void TileMatrix::instantMoveLeft()
+{
+	for (int j = 0; j < m_matrixHeight; ++j)
+		for (int i = 0; i < m_matrixWidth; ++i)
+			if (m_matrix[i][j] != nullptr) {
+				const sf::Vector2i new_pos{ findFreeLeft(sf::Vector2i(i, j)), j };
+				const int distance = i - new_pos.x;
+
+				if (distance > 0) {
+					const float pixel_distance = static_cast<float>(distance) * (*m_innerEdgeWidth + *m_tileWidth);
+					m_matrix[i][j]->instantMove(sf::Vector2f(-pixel_distance, 0.f));
+					addMoveInstructions(new_pos, sf::Vector2i{ i, j });
+				}
+			}
+
+	endMove();
+	endMerge();
+}
+
+void TileMatrix::instantMoveRight()
+{
+	for (int j = 0; j < m_matrixHeight; ++j)
+		for (int i = m_matrixWidth - 1; i >= 0; --i)
+			if (m_matrix[i][j] != nullptr) {
+				const sf::Vector2i new_pos{ findFreeRight(sf::Vector2i(i, j)), j };
+				const int distance = new_pos.x - i;
+
+				if (distance > 0) {
+					const float pixel_distance = static_cast<float>(distance) * (*m_innerEdgeWidth + *m_tileWidth);
+					m_matrix[i][j]->instantMove(sf::Vector2f(pixel_distance, 0.f));
+					addMoveInstructions(new_pos, sf::Vector2i{ i, j });
+				}
+			}
+
+
+	endMove();
+	endMerge();
+}
+
+void TileMatrix::instantMoveUp()
+{
+	for (int i = 0; i < m_matrixWidth; ++i)
+		for (int j = 0; j < m_matrixHeight; ++j)
+			if (m_matrix[i][j] != nullptr) {
+				const sf::Vector2i new_pos{ i, findFreeUp(sf::Vector2i(i, j)) };
+				const int distance = j - new_pos.y;
+
+				if (distance > 0) {
+					const float pixel_distance = static_cast<float>(distance) * (*m_innerEdgeWidth + *m_tileWidth);
+					m_matrix[i][j]->instantMove(sf::Vector2f(0.f, -pixel_distance));
+					addMoveInstructions(new_pos, sf::Vector2i{ i, j });
+				}
+			}
+
+	endMove();
+	endMerge();
+}
+
+void TileMatrix::instantMoveDown()
+{
+	for (int i = 0; i < m_matrixWidth; ++i)
+		for (int j = m_matrixHeight - 1; j >= 0; --j)
+			if (m_matrix[i][j] != nullptr) {
+				const sf::Vector2i new_pos{ i, findFreeDown(sf::Vector2i(i, j)) };
+				const int distance = new_pos.y - j;
+
+				if (distance > 0) {
+					const float pixel_distance = static_cast<float>(distance) * (*m_innerEdgeWidth + *m_tileWidth);
+					m_matrix[i][j]->instantMove(sf::Vector2f(0.f, pixel_distance));
+					addMoveInstructions(new_pos, sf::Vector2i{ i, j });
+				}
+			}
+
+	endMove();
+	endMerge();
 }
 
 void TileMatrix::addMoveInstructions(const sf::Vector2i& newPos, const sf::Vector2i& oldPos)
@@ -464,7 +547,11 @@ void TileMatrix::spawn(const int amount)
 		while (m_matrix[pos.x][pos.y])
 			pos = { rand() % 4, rand() % 4 };
 
-		addTile(pos);
+		// Generate random tile, 10% to be type of 4, 90% to be type of 2
+		if (rand() % 10 < 5)
+			addTile(pos, 4);
+		else
+			addTile(pos, 2);
 	}
 }
 
@@ -473,6 +560,7 @@ void TileMatrix::addTile(const sf::Vector2i& pos, const int type)
 	if (pos.x > m_matrixWidth - 1 || pos.y > m_matrixHeight - 1)
 		printf("TileMatrix::addTile ERROR: Tile spawning position out of bounds\n");
 	else {
+
 		m_matrix[pos.x][pos.y] = new Tile(type, m_textures[findID(type)], m_scale, calculateTilePos(pos), m_movementManager);
 		m_matrix[pos.x][pos.y]->startSpawning();
 		++m_tiles;
@@ -483,7 +571,13 @@ void TileMatrix::addTile(const sf::Vector2i& pos, const int type)
 
 void TileMatrix::clearBoard()
 {
+	for (size_t i = 0; i < m_moveInstructions.size(); ++i)
+		delete m_moveInstructions[i];
 	m_moveInstructions.clear();
+
+	for (size_t i = 0; i < m_tilesToMerge.size(); ++i)
+		delete m_tilesToMerge[i];
+	m_tilesToMerge.clear();
 
 	for (int i = 0; i < m_matrixHeight; ++i)
 		for (int j = 0; j < m_matrixWidth; ++j) {

@@ -79,6 +79,31 @@ void Playground::move(const sf::Keyboard::Key key)
 	}
 }
 
+void Playground::instantMove(const sf::Keyboard::Key key)
+{
+	if (m_tileMatrix->getIsMoving()) return;
+
+	switch (key)
+	{
+	case sf::Keyboard::Key::Up:
+	case sf::Keyboard::Key::W:
+		m_tileMatrix->instantMoveUp();
+		break;
+	case sf::Keyboard::Key::Down:
+	case sf::Keyboard::Key::S:
+		m_tileMatrix->instantMoveDown();
+		break;
+	case sf::Keyboard::Key::Left:
+	case sf::Keyboard::Key::A:
+		m_tileMatrix->instantMoveLeft();
+		break;
+	case sf::Keyboard::Key::Right:
+	case sf::Keyboard::Key::D:
+		m_tileMatrix->instantMoveRight();
+		break;
+	}
+}
+
 void Playground::clearBoard()
 {
 	m_isGameOver = false;

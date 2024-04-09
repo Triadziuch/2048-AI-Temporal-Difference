@@ -27,6 +27,7 @@ public:
 	void updateScore();
 
 	void move(const sf::Keyboard::Key key);
+	void instantMove(const sf::Keyboard::Key key);
 	void clearBoard();
 
 	// Accessors
@@ -37,6 +38,9 @@ public:
 	const bool getIsMoving() const { return m_tileMatrix->getIsMoving(); }
 	sf::FloatRect getNewGameButton() { return m_gui->getNewGameButton(); }
 	const bool getIsGameOver() const { return m_tileMatrix->getIsGameOver(); }
+	const int getScore() const { return m_score; }
+
+	void setScore(const int score) { m_score = score; }
 	
 	// AI functions
 	TileMatrix* getTileMatrix() { return m_tileMatrix; }

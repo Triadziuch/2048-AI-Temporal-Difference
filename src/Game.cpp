@@ -47,7 +47,7 @@ void Game::run()
 {
 	while (window->isOpen()) {
 		update();
-		render();
+		//render();
 	}
 }
 
@@ -74,6 +74,17 @@ void Game::update() {
 			updateMousePositions();
 			updatePollEvents();
 			agent->update(dt);
+
+			if (playground->getIsGameOver()) {
+				render();
+				
+				agent->displayProgress(playground->getScore());
+				agent->total_games++;
+				agent->log(playground->getScore());
+				playground->setScore(0);
+				playground->clearBoard();
+				//system("pause");
+			}
 		}
 	}
 }

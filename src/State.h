@@ -18,6 +18,7 @@ class State
 {
 private:
 	std::vector <Instructions*>	m_moveInstructions;
+
 	bool willBeOccupied(const sf::Vector2i& pos) const;
 	const int merge(const sf::Vector2i& pos, const Taction& direction);
 	const int findFreeSpace(const sf::Vector2i& pos, const Taction& direction);
@@ -36,6 +37,7 @@ public:
 	~State();
 
 	float move(Taction direction);
+	bool isMovePossible(Taction direction);
 
 	const void display(const std::string& text = "") const;
 
@@ -43,4 +45,3 @@ public:
 	bool **board_moving;
 	bool **board_merging;
 };
-

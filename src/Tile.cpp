@@ -53,6 +53,11 @@ void Tile::smoothMove(const sf::Vector2f& offset, const float duration)
 	m_movementContainer->addMovement(&m_sprite, new movementInfo(m_sprite.getPosition(), m_sprite.getPosition() + offset, duration, easeFunctions::getFunction(easeFunctions::IN_OUT_SINE), false, 0.f, 0.f));
 }
 
+void Tile::instantMove(const sf::Vector2f& offset)
+{
+	m_sprite.move(offset);
+}
+
 void Tile::startSpawning()
 {
 	m_spawningTime = 0.f;

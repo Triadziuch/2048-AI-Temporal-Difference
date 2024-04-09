@@ -45,9 +45,13 @@ private:
 	TileMatrix* matrix;
 	LUTContainer m_LUTs;
 
-	bool learning_enabled = true;
+	bool learning_enabled = true, logging_enabled = true;
+	const std::string log_filename = "log.txt";
+	std::ofstream log_file;
 
 	State* const getState() const;
+	long long int total_steps = 0;
+	
 
 	
 	float get_state_value(const State* const state) const;
@@ -57,8 +61,15 @@ private:
 	void learn_evaluation(const State* const state, const Taction action, const float reward, const State* const afterstate, const State* const next_state);
 	ComputeAfterstateResult compute_afterstate(const State* const state, const Taction action);
 
+	
+
 public:
+	long long int total_games = 0;
+
 	Agent(Playground* playgroundPtr);
 
 	void update(const float dt);
+
+	void displayProgress(int score) const;
+	void log(int score);
 };

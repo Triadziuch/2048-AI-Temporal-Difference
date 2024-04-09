@@ -25,13 +25,13 @@ private:
 	sf::Texture* m_textures[12]{};
 	sf::Vector2f m_playgroundPosition{};
 
-	const float m_timeSpawningMax = 0.2f;
+	const float m_timeSpawningMax = 0.f;
 
 	float m_timeMoving = 0.f;
-	const float m_timeMovingMax = 0.2f;
+	const float m_timeMovingMax = 0.f;
 	
 	float m_timeMerging = 0.f;
-	const float m_timeMergingMax = 0.2f;
+	const float m_timeMergingMax = 0.f;
 
 	std::vector <MoveInstructions*>	m_moveInstructions;
 	std::vector <Tile*> m_tilesToMerge;
@@ -84,6 +84,12 @@ public:
 	void moveRight();
 	void moveUp();
 	void moveDown();
+
+	void instantMoveLeft();
+	void instantMoveRight();
+	void instantMoveUp();
+	void instantMoveDown();
+
 	void addMoveInstructions(const sf::Vector2i& newPos, const sf::Vector2i& oldPos);
 
 	// Tile manipulation functions
