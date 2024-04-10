@@ -325,9 +325,9 @@ float State::move(Taction direction)
 					const sf::Vector2i new_pos{ findFreeSpace(sf::Vector2i(i, j), direction), j };
 					const int distance = new_pos.x - i;
 
-					if (distance > 0) {
+					if (distance > 0) 
 						addMoveInstructions(new_pos, sf::Vector2i{ i, j });
-					}
+					
 				}
 	}
 
