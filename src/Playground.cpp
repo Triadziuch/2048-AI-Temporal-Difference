@@ -85,22 +85,22 @@ void Playground::instantMove(const sf::Keyboard::Key key)
 
 	switch (key)
 	{
-	case sf::Keyboard::Key::Up:
-	case sf::Keyboard::Key::W:
-		m_tileMatrix->instantMoveUp();
-		break;
-	case sf::Keyboard::Key::Down:
-	case sf::Keyboard::Key::S:
-		m_tileMatrix->instantMoveDown();
-		break;
-	case sf::Keyboard::Key::Left:
-	case sf::Keyboard::Key::A:
-		m_tileMatrix->instantMoveLeft();
-		break;
-	case sf::Keyboard::Key::Right:
-	case sf::Keyboard::Key::D:
-		m_tileMatrix->instantMoveRight();
-		break;
+		case sf::Keyboard::Key::Up:
+		case sf::Keyboard::Key::W:
+			m_tileMatrix->instantMoveUp();
+			break;
+		case sf::Keyboard::Key::Down:
+		case sf::Keyboard::Key::S:
+			m_tileMatrix->instantMoveDown();
+			break;
+		case sf::Keyboard::Key::Left:
+		case sf::Keyboard::Key::A:
+			m_tileMatrix->instantMoveLeft();
+			break;
+		case sf::Keyboard::Key::Right:
+		case sf::Keyboard::Key::D:
+			m_tileMatrix->instantMoveRight();
+			break;
 	}
 }
 
@@ -109,6 +109,7 @@ void Playground::clearBoard()
 	m_isGameOver = false;
 	m_gui->stopGameOver();
 	m_gui->saveBestScore();
+	m_score = 0;
 	m_gui->setScore(0);
 	m_tileMatrix->clearBoard();
 	m_tileMatrix->spawn();

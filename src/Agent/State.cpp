@@ -490,5 +490,13 @@ const bool State::isTerminalState() const
 				return false;
 		}
 
+	for (size_t i = 0; i < HEIGHT - 1; ++i)
+		if (board[WIDTH - 1][i] == board[WIDTH - 1][i + 1])
+			return false;
+
+	for (size_t i = 0; i < WIDTH - 1; ++i)
+		if (board[i][HEIGHT - 1] == board[i + 1][HEIGHT - 1])
+			return false;
+
 	return true;
 }

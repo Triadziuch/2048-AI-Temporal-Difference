@@ -324,12 +324,6 @@ void TileMatrix::moveDown()
 					addMoveInstructions(new_pos, sf::Vector2i{ i, j });
 				}
 			}
-	m_movementManager->update(1.f);
-	for (size_t i = 0; i < m_matrixHeight; ++i)
-		for (size_t j = 0; j < m_matrixWidth; ++j)
-			if (m_matrix[i][j])
-				m_matrix[i][j]->update(1.f);
-	endMove();
 }
 
 void TileMatrix::instantMoveLeft()
@@ -455,6 +449,9 @@ void TileMatrix::endMove()
 				m_matrix[new_pos.x][new_pos.y]->setIsMerging(false);
 			}
 		}
+		
+		for (size_t i = 0; i < m_moveInstructions.size(); ++i)
+			delete m_moveInstructions[i];
 		m_moveInstructions.clear();
 
 		if (m_state == Tstate::MOVING) {
@@ -505,6 +502,9 @@ TileMatrix::~TileMatrix()
 
 void TileMatrix::update(float dt)
 {
+	m_movementManager->update(dt);
+	m_movementContainer->update(dt);
+
 	for (size_t i = 0; i < m_matrixHeight; ++i)
 		for (size_t j = 0; j < m_matrixWidth; ++j)
 			if (m_matrix[i][j])
@@ -516,9 +516,6 @@ void TileMatrix::update(float dt)
 
 		if (m_state == Tstate::MERGING)
 			updateMerge(dt);
-
-		m_movementManager->update(dt);
-		m_movementContainer->update(dt);
 	}
 }
 
@@ -596,23 +593,22 @@ void TileMatrix::clearBoard()
 
 bool TileMatrix::isGameOver()
 {
-	if (m_tiles < m_maxTiles)
-		return false;
-	else {
-		for (int i = 1; i < m_matrixHeight - 1; ++i)
-			for (int j = 1; j < m_matrixWidth - 1; ++j)
-				if (m_matrix[j][i]->getType() == m_matrix[j - 1][i]->getType() ||
-					m_matrix[j][i]->getType() == m_matrix[j + 1][i]->getType() ||
-					m_matrix[j][i]->getType() == m_matrix[j][i - 1]->getType() ||
-					m_matrix[j][i]->getType() == m_matrix[j][i + 1]->getType())
-					return false;
-
-		for (size_t i = 0; i < m_matrixWidth - 1; ++i)
-			if (m_matrix[i][0]->getType() == m_matrix[i + 1][0]->getType() || m_matrix[i][m_matrixHeight - 1]->getType() == m_matrix[i + 1][m_matrixHeight - 1]->getType())
-				return false;
+	if (m_tiles >= m_maxTiles){
 
 		for (size_t i = 0; i < m_matrixHeight - 1; ++i)
-			if (m_matrix[0][i]->getType() == m_matrix[0][i + 1]->getType() || m_matrix[m_matrixWidth - 1][i]->getType() == m_matrix[m_matrixWidth - 1][i + 1]->getType())
+			for (size_t j = 0; j < m_matrixWidth - 1; ++j) {
+				if (m_matrix[j][i]->getType() == m_matrix[j + 1][i]->getType())
+					return false;
+				if (m_matrix[j][i]->getType() == m_matrix[j][i + 1]->getType())
+					return false;
+			}
+
+		for (size_t i = 0; i < m_matrixHeight - 1; ++i)
+			if (m_matrix[m_matrixWidth - 1][i]->getType() == m_matrix[m_matrixWidth - 1][i + 1]->getType())
+				return false;
+
+		for (size_t i = 0; i < m_matrixWidth - 1; ++i)
+			if (m_matrix[i][m_matrixHeight - 1]->getType() == m_matrix[i + 1][m_matrixHeight - 1]->getType())
 				return false;
 
 		// Game Over
@@ -636,9 +632,19 @@ bool TileMatrix::getIsMoving() const
 	return m_state == Tstate::MOVING;
 }
 
+bool TileMatrix::getIsMerging() const
+{
+	return m_state == Tstate::MERGING;
+}
+
 bool TileMatrix::getIsGameOver() const
 {
 	return m_isGameOver;
+}
+
+bool TileMatrix::getIsIdle() const
+{
+	return m_state == Tstate::IDLE;
 }
 
 int TileMatrix::getAddedScore() const
@@ -662,6 +668,21 @@ int TileMatrix::getMaxType() const
 void TileMatrix::setAddedScore(const int value)
 {
 	m_addedScore = value;
+}
+
+void TileMatrix::setTimeSpawning(const float time)
+{
+	m_timeSpawningMax = time;
+}
+
+void TileMatrix::setTimeMoving(const float time)
+{
+	m_timeMovingMax = time;
+}
+
+void TileMatrix::setTimeMerging(const float time)
+{
+	m_timeMergingMax = time;
 }
 
 State* const TileMatrix::getState() const

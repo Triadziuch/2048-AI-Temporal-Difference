@@ -1,11 +1,11 @@
 #pragma once
-#include <filesystem>
-#include <random>
-
 #include "../Playground.h"
 #include "NTuples.h"
 #include "Transition.h"
 #include "ComputeAfterstateResult.h"
+
+#include <filesystem>
+#include <random>
 
 class Agent
 {
@@ -15,14 +15,14 @@ private:
 	NTuples m_LUTs;
 
 	// Configuration
-	constexpr static double learningRate    = 0.01;
-	constexpr static double explorationRate = 0.001f;
+	double learningRate    = 0.0025;
+	double explorationRate = 0.00025;
 	bool learningEnabled = true;
 	bool loggingEnabled = true;
 	bool resumeLearning = true;
+	const std::string configFilename = "config.txt";
 
 	// Logging variables
-	std::ofstream logFile;
 	const std::string logFilename = "log.txt";
 	
 	// LUT logging variables
@@ -37,12 +37,13 @@ private:
 	
 
 	// Utility functions
+	void loadConfig();
 	void loadLatestLUTs();
 	State* const getState() const;
 	float generateRandomFloat(float min = 0.f, float max = 1.f) const;
 
 	// Logging functions
-	void log(int score);
+	void log(int score) const;
 	void displayProgress(int score) const;
 
 	// Learning functions
@@ -68,4 +69,9 @@ public:
 
 	// Public functions
 	void episodeEnded(int score);
+
+	// Accessors
+	long long int getGamesCount() const;
+	long long int getStepsCount() const;
+	bool getIsLearning() const;
 };

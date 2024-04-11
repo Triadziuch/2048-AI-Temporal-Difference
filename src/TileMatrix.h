@@ -3,7 +3,7 @@
 #include "MovementManager/MovementManager.h"
 #include "Tile.h"
 #include "AssetManager.h"
-#include "State.h"
+#include "Agent/State.h"
 
 struct MoveInstructions {
 	sf::Vector2i m_newPos, m_oldPos;
@@ -25,13 +25,13 @@ private:
 	sf::Texture* m_textures[12]{};
 	sf::Vector2f m_playgroundPosition{};
 
-	const float m_timeSpawningMax = 0.f;
+	float m_timeSpawningMax = 0.f;
 
 	float m_timeMoving = 0.f;
-	const float m_timeMovingMax = 0.f;
+	float m_timeMovingMax = 0.f;
 	
 	float m_timeMerging = 0.f;
-	const float m_timeMergingMax = 0.f;
+	float m_timeMergingMax = 0.f;
 
 	std::vector <MoveInstructions*>	m_moveInstructions;
 	std::vector <Tile*> m_tilesToMerge;
@@ -100,11 +100,16 @@ public:
 
 	// Accessors / Mutators
 	bool getIsMoving() const;
+	bool getIsMerging() const;
 	bool getIsGameOver() const;
+	bool getIsIdle() const;
 	int getAddedScore() const;
 	int getMaxType() const;
 
 	void setAddedScore(const int score);
+	void setTimeSpawning(const float time);
+	void setTimeMoving(const float time);
+	void setTimeMerging(const float time);
 
 	// AI functions
 	State* const getState() const;

@@ -1,6 +1,47 @@
 #pragma once
 #include "Agent.h"
 
+void Agent::loadConfig()
+{
+	std::ifstream configFile(configFilename);
+
+	if (configFile.is_open()) {
+		std::string line;
+		while (std::getline(configFile, line)) {
+			if (line[0] != '#' && !line.empty()) {
+				size_t delimiter = line.find("=") - 1;
+				std::string key = line.substr(0, delimiter);
+
+				size_t value_start = line.find("\"") + 1;
+				size_t value_end = line.find("\"", value_start);
+				std::string value = line.substr(value_start, value_end - value_start);
+
+				if (key == "loggingEnabled") 
+					loggingEnabled = value == "true";
+				else if (key == "learningEnabled") {
+					learningEnabled = value == "true";
+
+					if (!learningEnabled) {
+						matrix->setTimeSpawning(0.2f);
+						matrix->setTimeMoving(0.2f);
+						matrix->setTimeMerging(0.2f);
+					}
+				}
+					
+				else if (key == "resumeLearning")
+					resumeLearning = value == "true";
+				else if (key == "explorationRate")
+					explorationRate = std::stod(value);
+				else if (key == "learningRate")
+					learningRate = std::stod(value);
+			}
+		}
+	}
+	else
+		std::cerr << "Could not open config file: " << configFilename << std::endl;
+	configFile.close();
+}
+
 // Utility functions
 void Agent::loadLatestLUTs()
 {
@@ -54,9 +95,10 @@ float Agent::generateRandomFloat(float min, float max) const {
 
 
 // Logging functions
-void Agent::log(int score)
+void Agent::log(int score) const
 {
 	if (loggingEnabled) {
+		std::ofstream logFile;
 		logFile.open(logFilename, std::ios::app);
 		logFile << total_games << ";" << total_steps << ";" << score << ";" << matrix->getMaxType() << std::endl;
 		logFile.close();
@@ -65,7 +107,8 @@ void Agent::log(int score)
 
 void Agent::displayProgress(int score) const
 {
-	printf("Games: %lld\tStep: %lld\tReward: %d\tMax type: %d\n", total_games, total_steps, static_cast<int>(score), matrix->getMaxType());
+	if (loggingEnabled)
+		printf("Games: %lld\tStep: %lld\tReward: %d\tMax type: %d\n", total_games, total_steps, static_cast<int>(score), matrix->getMaxType());
 }
 
 
@@ -167,20 +210,39 @@ Transition Agent::move(const State* const state, const Taction action) // MAKE M
 	transition.reward = afterstate_result.reward;
 	transition.afterstate = afterstate_result.afterstate;
 
-	switch (action) {
-		case Taction::UP:
-			playground->move(sf::Keyboard::Up);
-			break;
-		case Taction::DOWN:
-			playground->move(sf::Keyboard::Down);
-			break;
-		case Taction::LEFT:
-			playground->move(sf::Keyboard::Left);
-			break;
-		case Taction::RIGHT:
-			playground->move(sf::Keyboard::Right);
-			break;
+	if (learningEnabled) {
+		switch (action) {
+			case Taction::UP:
+				playground->instantMove(sf::Keyboard::Up);
+				break;
+			case Taction::DOWN:
+				playground->instantMove(sf::Keyboard::Down);
+				break;
+			case Taction::LEFT:
+				playground->instantMove(sf::Keyboard::Left);
+				break;
+			case Taction::RIGHT:
+				playground->instantMove(sf::Keyboard::Right);
+				break;
+		}
 	}
+	else {
+		switch (action) {
+			case Taction::UP:
+				playground->move(sf::Keyboard::Up);
+				break;
+			case Taction::DOWN:
+				playground->move(sf::Keyboard::Down);
+				break;
+			case Taction::LEFT:
+				playground->move(sf::Keyboard::Left);
+				break;
+			case Taction::RIGHT:
+				playground->move(sf::Keyboard::Right);
+				break;
+		}
+	}
+	
 
 	transition.nextState = getState();
 
@@ -201,6 +263,7 @@ ComputeAfterstateResult Agent::computeAfterstate(const State* const state, const
 Agent::Agent(Playground* playgroundPtr) : playground(playgroundPtr), matrix{ playground->getTileMatrix() } {
 	std::srand(static_cast<unsigned int>(std::time(nullptr)));
 
+	loadConfig();
 	if (resumeLearning)
 		loadLatestLUTs();
 }
@@ -211,11 +274,7 @@ Agent::Agent(const Agent& other) :
 	std::srand(static_cast<unsigned int>(std::time(nullptr)));
 }
 
-Agent::~Agent()
-{
-	if (logFile.is_open())
-		logFile.close();
-}
+Agent::~Agent() {}
 
 
 
@@ -230,7 +289,7 @@ void Agent::update(const float dt)
 		lastSavedGame = total_games;
 	}
 
-	if (!playground->getIsGameOver() && !playground->getIsMoving()) {
+	if (!playground->getIsGameOver() && matrix->getIsIdle()) {
 
 		Taction best_action = Taction::UP;
 
@@ -276,4 +335,19 @@ void Agent::episodeEnded(int score)
 	displayProgress(score);
 	log(score);
 	total_games++;
+}
+
+long long int Agent::getGamesCount() const
+{
+	return total_games;
+}
+
+long long int Agent::getStepsCount() const
+{
+	return total_steps;
+}
+
+bool Agent::getIsLearning() const
+{
+	return learningEnabled;
 }

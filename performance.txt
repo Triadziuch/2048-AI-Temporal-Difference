@@ -1,0 +1,2 @@
+Przed optymalizacją:
+Games: 1000 | Time: 30.0951s ===> 1 game = 30,0951 ms ===> 33,23 games / s

@@ -45,6 +45,7 @@ Game::~Game()
 // Run functions
 void Game::run()
 {
+	start_time = std::chrono::high_resolution_clock::now();
 	while (window->isOpen()) {
 		update();
 		//render();
@@ -59,28 +60,29 @@ void Game::update() {
 	if (!isEnd) {
 		playground->update(dt);
 
-		if (!isLearning) {
-			if (!isGameOver) {
-				updateMousePositions();
-				updatePollEvents();
-				updateGameOver();
-			}
-			else {
-				updateMousePositions();
-				updatePollEvents();
-			}
-		}
-		else {
+		if (!isEnd) {
+			playground->update(dt);
+
 			updateMousePositions();
 			updatePollEvents();
 			agent->update(dt);
 
-			if (playground->getIsGameOver()) {
+			if (!agent->getIsLearning()) 
 				render();
-				
+			else if (playground->getIsGameOver()) {
+				games++;
+				render();
+
 				agent->episodeEnded(playground->getScore());
-				playground->setScore(0);
 				playground->clearBoard();
+
+				if (games % 100 == 0) {
+					end_time = std::chrono::high_resolution_clock::now();
+					std::chrono::duration<double> elapsed_time = end_time - start_time;
+					measured_time += elapsed_time.count();
+					//std::cout << "Games: " << games << " | Time: " << measured_time << "s" << std::endl;
+					start_time = std::chrono::high_resolution_clock::now();
+				}
 			}
 		}
 	}
@@ -103,9 +105,6 @@ void Game::updatePollEvents()
 				
 		if (!isEnd) {
 			if (!isGameOver) 
-				if (ev.type == sf::Event::KeyPressed && isLearning)
-					playground->move(ev.key.code);
-
 			
 			if (playground->getNewGameButton().contains(mouse_pos_view)) {
 				if (cursor_type != sf::StandardCursor::HAND) {

@@ -1,9 +1,12 @@
 #pragma once
-#include "Agent.h"
+#include "Agent/Agent.h"
 #include "Playground.h"
 #include "StandardCursor.h"
 #include "AssetManager.h"
 #include "math.h"
+#include <chrono>
+
+using namespace std::chrono;
 
 class Game 
 {
@@ -22,8 +25,7 @@ private:
 	// Other variables
 	bool isEnd		= false;
 	bool isGameOver	= false;
-	bool isLearning = true;
-	Playground*			playground;
+	Playground*	playground;
 	AssetManager manager;
 
 	// Clock variables
@@ -34,6 +36,10 @@ private:
 	void initWindow();
 	void initVariables();
 	void initAssets();
+
+	time_point<high_resolution_clock> start_time{}, end_time{};
+	long long int games = 0;
+	double measured_time = 0;
 
 	// AI Agent
 	Agent *agent;
