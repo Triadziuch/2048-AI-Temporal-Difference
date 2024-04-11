@@ -19,6 +19,8 @@ class State
 private:
 	std::vector <Instructions*>	m_moveInstructions;
 
+	static constexpr int REWARDS[] = { 0, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096 };
+
 	bool willBeOccupied(const sf::Vector2i& pos) const;
 	const int merge(const sf::Vector2i& pos, const Taction& direction);
 	const int findFreeSpace(const sf::Vector2i& pos, const Taction& direction);
@@ -36,10 +38,13 @@ public:
 	State(const State& other);
 	~State();
 
-	float move(Taction direction);
+	int move(Taction direction);
 	bool isMovePossible(Taction direction);
 
 	const void display(const std::string& text = "") const;
+
+    const bool isTerminalState() const;
+
 
 	int **board;
 	bool **board_moving;

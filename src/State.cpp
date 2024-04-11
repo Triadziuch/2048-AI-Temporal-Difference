@@ -266,7 +266,7 @@ State::~State()
 	m_moveInstructions.clear();
 }
 
-float State::move(Taction direction)
+int State::move(Taction direction)
 {
 	if (debug) {
 		if (direction == Taction::UP)
@@ -289,9 +289,8 @@ float State::move(Taction direction)
 					const sf::Vector2i new_pos{ i, findFreeSpace(sf::Vector2i(i, j), direction) };
 					const int distance = j - new_pos.y;
 
-					if (distance > 0) {
+					if (distance > 0) 
 						addMoveInstructions(new_pos, sf::Vector2i{ i, j });
-					}
 				}
 	}
 	else if (direction == Taction::DOWN) {
@@ -301,9 +300,8 @@ float State::move(Taction direction)
 					const sf::Vector2i new_pos{ i, findFreeSpace(sf::Vector2i(i, j), direction) };
 					const int distance = new_pos.y - j;
 
-					if (distance > 0) {
+					if (distance > 0) 
 						addMoveInstructions(new_pos, sf::Vector2i{ i, j });
-					}
 				}
 	}
 	else if (direction == Taction::LEFT) {
@@ -313,9 +311,8 @@ float State::move(Taction direction)
 					const sf::Vector2i new_pos{ findFreeSpace(sf::Vector2i(i, j), direction), j };
 					const int distance = i - new_pos.x;
 
-					if (distance > 0) {
+					if (distance > 0) 
 						addMoveInstructions(new_pos, sf::Vector2i{ i, j });
-					}
 				}
 	}
 	else if (direction == Taction::RIGHT) {
@@ -327,32 +324,20 @@ float State::move(Taction direction)
 
 					if (distance > 0) 
 						addMoveInstructions(new_pos, sf::Vector2i{ i, j });
-					
 				}
 	}
 
-	float move_reward = 0.f;
-	if (m_moveInstructions.size() == 0) {
-		for (size_t i = 0; i < HEIGHT; ++i)
-			for (size_t j = 0; j < WIDTH; ++j) {
-				board_moving[i][j] = false;
-				board_merging[i][j] = false;
-			}
-
-		return -5.f;
-	}
-		
+	int reward = 0;
 
 	for (size_t i = 0; i < m_moveInstructions.size(); ++i) {
 		if (m_moveInstructions[i]->m_merge) {
 			const sf::Vector2i new_pos = m_moveInstructions[i]->getNewPos();
 			const sf::Vector2i old_pos = m_moveInstructions[i]->getOldPos();
-			
+
 			board[new_pos.x][new_pos.y] = board[old_pos.x][old_pos.y] + 1;
 			board[old_pos.x][old_pos.y] = 0;
 
-			if (board[new_pos.x][new_pos.y] > 0)
-				move_reward += pow(2, board[new_pos.x][new_pos.y]);
+			reward += REWARDS[board[new_pos.x][new_pos.y]];
 		}
 		else {
 			const sf::Vector2i new_pos = m_moveInstructions[i]->getNewPos();
@@ -361,6 +346,7 @@ float State::move(Taction direction)
 			board[old_pos.x][old_pos.y] = 0;
 		}
 	}
+	
 
 	for (size_t i = 0; i < HEIGHT; ++i)
 		for (size_t j = 0; j < WIDTH; ++j) {
@@ -374,10 +360,10 @@ float State::move(Taction direction)
 
 	if (debug) {
 		display("Board after:");
-		printf("Reward: %f\n\n\n", move_reward);
+		printf("Reward: %d\n\n\n", reward);
 	}
 	
-	return move_reward;
+	return reward;
 }
 
 bool State::isMovePossible(Taction direction)
@@ -487,4 +473,22 @@ const void State::display(const std::string& text) const
 		printf("\n");
 	}
 	printf("\n");
+}
+
+const bool State::isTerminalState() const
+{
+	for (size_t i = 0; i < HEIGHT; ++i)
+		for (size_t j = 0; j < WIDTH; ++j)
+			if (board[j][i] == 0)
+				return false;
+
+	for (size_t i = 0; i < HEIGHT - 1; ++i)
+		for (size_t j = 0; j < WIDTH - 1; ++j) {
+			if (board[j][i] == board[j + 1][i])
+				return false;
+			if (board[j][i] == board[j][i + 1])
+				return false;
+		}
+
+	return true;
 }

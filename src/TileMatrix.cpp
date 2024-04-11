@@ -548,7 +548,7 @@ void TileMatrix::spawn(const int amount)
 			pos = { rand() % 4, rand() % 4 };
 
 		// Generate random tile, 10% to be type of 4, 90% to be type of 2
-		if (rand() % 10 < 5)
+		if (rand() % 10 == 0)
 			addTile(pos, 4);
 		else
 			addTile(pos, 2);
@@ -644,6 +644,19 @@ bool TileMatrix::getIsGameOver() const
 int TileMatrix::getAddedScore() const
 {
 	return m_addedScore;
+}
+
+int TileMatrix::getMaxType() const
+{
+	int max = 0;
+
+	for (size_t i = 0; i < m_matrixHeight; ++i)
+		for (size_t j = 0; j < m_matrixWidth; ++j)
+			if (m_matrix[i][j])
+				if (m_matrix[i][j]->getType() > max)
+					max = m_matrix[i][j]->getType();
+
+	return max;
 }
 
 void TileMatrix::setAddedScore(const int value)

@@ -1,5 +1,8 @@
 #pragma once
 #include "Playground.h"
+#include <sstream>
+#include <filesystem>
+#include <random>
 
 class LUTContainer
 {
@@ -13,19 +16,22 @@ public:
 	constexpr static size_t NUM_HORIZONTAL = 4;
 	constexpr static size_t NUM_SQUARES = 9;
 
-	float V_LUT[NUM_VERTICAL][MAX_TYPE + 1][MAX_TYPE + 1][MAX_TYPE + 1][MAX_TYPE + 1]{ 0.5f };
-	float H_LUT[NUM_HORIZONTAL][MAX_TYPE + 1][MAX_TYPE + 1][MAX_TYPE + 1][MAX_TYPE + 1]{ 0.3f };
-	float SQUARE_LUT[NUM_SQUARES][MAX_TYPE + 1][MAX_TYPE + 1][MAX_TYPE + 1][MAX_TYPE + 1]{ 0.1f };
+	float V_LUT[NUM_VERTICAL][MAX_TYPE + 1][MAX_TYPE + 1][MAX_TYPE + 1][MAX_TYPE + 1]{ 0.f };
+	float H_LUT[NUM_HORIZONTAL][MAX_TYPE + 1][MAX_TYPE + 1][MAX_TYPE + 1][MAX_TYPE + 1]{ 0.f };
+	float SQUARE_LUT[NUM_SQUARES][MAX_TYPE + 1][MAX_TYPE + 1][MAX_TYPE + 1][MAX_TYPE + 1]{ 0.f };
+
+	void save(const std::string& filename) const;
+	void load(const std::string& filename);
 };
 
-struct MoveResult
+struct Transition
 {
-	float reward;
-	State* afterstate, *next_state;
+	int reward;
+	State* afterstate, *nextState;
 
-	MoveResult() : reward(0.0f), afterstate(nullptr), next_state(nullptr) {}
-	MoveResult(float reward, State* afterstate, State* next_state) : reward(reward), afterstate(afterstate), next_state(next_state) {}
-	MoveResult(const MoveResult& other) : reward(other.reward), afterstate(other.afterstate), next_state(other.next_state) {}
+	Transition() : reward(0.0f), afterstate(nullptr), nextState(nullptr) {}
+	Transition(float reward, State* afterstate, State* nextState) : reward(reward), afterstate(afterstate), nextState(nextState) {}
+	Transition(const Transition& other) : reward(other.reward), afterstate(other.afterstate), nextState(other.nextState) {}
 };
 
 struct ComputeAfterstateResult
@@ -45,22 +51,39 @@ private:
 	TileMatrix* matrix;
 	LUTContainer m_LUTs;
 
-	bool learning_enabled = true, logging_enabled = true;
-	const std::string log_filename = "log.txt";
-	std::ofstream log_file;
+	// Configuration
+	constexpr static double learningRate    = 0.01;
+	constexpr static double explorationRate = 0.001f;
+	bool loggingEnabled = true;
+	bool resumeLearning = true;
 
-	State* const getState() const;
-	long long int total_steps = 0;
+	// Logging variables
+	std::ofstream logFile;
+	const std::string logFilename = "log.txt";
+	
+	// LUT logging variables
+	const std::string logTupleFolder	= "LUTs/";
+	const std::string logTupleFilename	= "LUT_";
+	const std::string logTupleExtension = ".txt";
+	long long int lastSavedGame	= -1;
 	
 
+	// Statistics variables
+	long long int total_steps = 0;
+	void loadLatestLUTs();
+
+	State* const getState() const;
+	float generateRandomFloat(float min = 0.f, float max = 1.f);
 	
 	float get_state_value(const State* const state) const;
 	Taction evaluate(const State* const state) const;
-	MoveResult make_move(const State* const state, const Taction action);
+	float evaluate_getbestactionvalue(const State* const state) const;
+	double getBestValueAction(const State* const state, Taction& best_action) const;
+	void updateValueFunction(const State* const afterstate, double expectedValue, double learningRate);
 
-	void learn_evaluation(const State* const state, const Taction action, const float reward, const State* const afterstate, const State* const next_state);
+	Transition make_move(const State* const state, const Taction action);
+
 	ComputeAfterstateResult compute_afterstate(const State* const state, const Taction action);
-
 	
 
 public:

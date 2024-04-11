@@ -102,6 +102,7 @@ public:
 	bool getIsMoving() const;
 	bool getIsGameOver() const;
 	int getAddedScore() const;
+	int getMaxType() const;
 
 	void setAddedScore(const int score);
 
