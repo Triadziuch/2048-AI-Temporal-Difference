@@ -136,7 +136,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\2048 TD Learning.cpp" />
-    <ClCompile Include="src\Agent.cpp" />
+    <ClCompile Include="src\Agent\Agent.cpp" />
+    <ClCompile Include="src\Agent\ComputeAfterstateResult.cpp" />
+    <ClCompile Include="src\Agent\NTuples.cpp" />
+    <ClCompile Include="src\Agent\State.cpp" />
+    <ClCompile Include="src\Agent\Transition.cpp" />
     <ClCompile Include="src\AssetManager.cpp" />
     <ClCompile Include="src\Game.cpp" />
     <ClCompile Include="src\GUI.cpp" />
@@ -149,12 +153,15 @@
     <ClCompile Include="src\MovementManager\VertexArray2.cpp" />
     <ClCompile Include="src\Playground.cpp" />
     <ClCompile Include="src\StandardCursor.cpp" />
-    <ClCompile Include="src\State.cpp" />
     <ClCompile Include="src\Tile.cpp" />
     <ClCompile Include="src\TileMatrix.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\Agent.h" />
+    <ClInclude Include="src\Agent\Agent.h" />
+    <ClInclude Include="src\Agent\ComputeAfterstateResult.h" />
+    <ClInclude Include="src\Agent\NTuples.h" />
+    <ClInclude Include="src\Agent\State.h" />
+    <ClInclude Include="src\Agent\Transition.h" />
     <ClInclude Include="src\AssetManager.h" />
     <ClInclude Include="src\Game.h" />
     <ClInclude Include="src\GUI.h" />
@@ -167,7 +174,6 @@
     <ClInclude Include="src\MovementManager\VertexArray2.h" />
     <ClInclude Include="src\Playground.h" />
     <ClInclude Include="src\StandardCursor.h" />
-    <ClInclude Include="src\State.h" />
     <ClInclude Include="src\Tile.h" />
     <ClInclude Include="src\TileMatrix.h" />
   </ItemGroup>
