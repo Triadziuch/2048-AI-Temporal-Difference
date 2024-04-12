@@ -22,9 +22,14 @@ void Agent::loadConfig()
 					learningEnabled = value == "true";
 
 					if (!learningEnabled) {
-						matrix->setTimeSpawning(0.2f);
-						matrix->setTimeMoving(0.2f);
-						matrix->setTimeMerging(0.2f);
+						matrix->setTimeSpawning(0.25f);
+						matrix->setTimeMoving(0.25f);
+						matrix->setTimeMerging(0.25f);
+					}
+					else {
+						matrix->setTimeSpawning(0.0f);
+						matrix->setTimeMoving(0.0f);
+						matrix->setTimeMerging(0.0f);
 					}
 				}
 					
