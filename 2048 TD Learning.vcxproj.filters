@@ -93,6 +93,9 @@
     <ClCompile Include="src\Agent\State.cpp">
       <Filter>Pliki źródłowe\Agent</Filter>
     </ClCompile>
+    <ClCompile Include="src\Board.cpp">
+      <Filter>Pliki źródłowe\2048</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Game.h">
@@ -151,6 +154,9 @@
     </ClInclude>
     <ClInclude Include="src\Agent\State.h">
       <Filter>Pliki nagłówkowe\Agent</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Board.h">
+      <Filter>Pliki nagłówkowe\2048</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
