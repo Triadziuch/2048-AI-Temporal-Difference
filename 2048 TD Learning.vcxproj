@@ -142,7 +142,6 @@
     <ClCompile Include="src\Agent\State.cpp" />
     <ClCompile Include="src\Agent\Transition.cpp" />
     <ClCompile Include="src\AssetManager.cpp" />
-    <ClCompile Include="src\Board.cpp" />
     <ClCompile Include="src\Game.cpp" />
     <ClCompile Include="src\GUI.cpp" />
     <ClCompile Include="src\MovementManager\easeFunctions.cpp" />
@@ -164,7 +163,6 @@
     <ClInclude Include="src\Agent\State.h" />
     <ClInclude Include="src\Agent\Transition.h" />
     <ClInclude Include="src\AssetManager.h" />
-    <ClInclude Include="src\Board.h" />
     <ClInclude Include="src\Game.h" />
     <ClInclude Include="src\GUI.h" />
     <ClInclude Include="src\MovementManager\easeFunctions.h" />

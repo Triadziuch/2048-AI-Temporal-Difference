@@ -50,6 +50,14 @@ public:
 	bool getSpawning() const;
 	sf::Sprite* getSprite();
 
+	// Overriden operators
+	bool operator==(const int& value) const;
+	bool operator==(const Tile* const other) const;
+	bool operator==(const Tile& other) const;
+	bool operator>(const int& value) const;
+	bool operator<(const int& value) const;
+
+
 	// Rendering functions
 	void render(sf::RenderTarget& target);
 };

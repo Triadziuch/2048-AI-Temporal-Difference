@@ -51,15 +51,8 @@ private:
 	sf::Vector2f calculateTilePos(const sf::Vector2i& pos) const;
 	void checkWin(const Tile& tile);
 
-	int findFreeLeft(const sf::Vector2i& pos);
-	int findFreeRight(const sf::Vector2i& pos);
-	int findFreeUp(const sf::Vector2i& pos);
-	int findFreeDown(const sf::Vector2i& pos);
-
-	int mergeLeft(const sf::Vector2i& pos);
-	int mergeRight(const sf::Vector2i& pos);
-	int mergeUp(const sf::Vector2i& pos);
-	int mergeDown(const sf::Vector2i& pos);
+	int findFreeSpace(const sf::Vector2i& pos, const Taction& direction);
+	int merge(const sf::Vector2i& pos, const Taction& direction);
 
 	bool willBeOccupied(const sf::Vector2i& pos) const;
 
@@ -80,15 +73,8 @@ public:
 	void updateMerge(float dt);
 
 	// Move functions
-	void moveLeft();
-	void moveRight();
-	void moveUp();
-	void moveDown();
-
-	void instantMoveLeft();
-	void instantMoveRight();
-	void instantMoveUp();
-	void instantMoveDown();
+	void move(const Taction& direction);
+	void instantMove(const Taction& direction);
 
 	void addMoveInstructions(const sf::Vector2i& newPos, const sf::Vector2i& oldPos);
 

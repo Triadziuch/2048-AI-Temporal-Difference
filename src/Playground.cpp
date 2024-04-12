@@ -62,19 +62,19 @@ void Playground::move(const sf::Keyboard::Key key)
 	{
 		case sf::Keyboard::Key::Up:
 		case sf::Keyboard::Key::W:
-			m_tileMatrix->moveUp();
+			m_tileMatrix->move(Taction::UP);
 			break;
 		case sf::Keyboard::Key::Down:
 		case sf::Keyboard::Key::S:
-			m_tileMatrix->moveDown();
+			m_tileMatrix->move(Taction::DOWN);
 			break;
 		case sf::Keyboard::Key::Left:
 		case sf::Keyboard::Key::A:
-			m_tileMatrix->moveLeft();
+			m_tileMatrix->move(Taction::LEFT);
 			break;
 		case sf::Keyboard::Key::Right:
 		case sf::Keyboard::Key::D:
-			m_tileMatrix->moveRight();
+			m_tileMatrix->move(Taction::RIGHT);
 			break;
 	}
 }
@@ -87,19 +87,19 @@ void Playground::instantMove(const sf::Keyboard::Key key)
 	{
 		case sf::Keyboard::Key::Up:
 		case sf::Keyboard::Key::W:
-			m_tileMatrix->instantMoveUp();
+			m_tileMatrix->instantMove(Taction::UP);
 			break;
 		case sf::Keyboard::Key::Down:
 		case sf::Keyboard::Key::S:
-			m_tileMatrix->instantMoveDown();
+			m_tileMatrix->instantMove(Taction::DOWN);
 			break;
 		case sf::Keyboard::Key::Left:
 		case sf::Keyboard::Key::A:
-			m_tileMatrix->instantMoveLeft();
+			m_tileMatrix->instantMove(Taction::LEFT);
 			break;
 		case sf::Keyboard::Key::Right:
 		case sf::Keyboard::Key::D:
-			m_tileMatrix->instantMoveRight();
+			m_tileMatrix->instantMove(Taction::RIGHT);
 			break;
 	}
 }

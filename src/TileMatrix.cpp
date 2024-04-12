@@ -27,188 +27,223 @@ sf::Vector2f TileMatrix::calculateTilePos(const sf::Vector2i& pos) const
 	return tilePos;
 }
 
-int TileMatrix::mergeLeft(const sf::Vector2i& pos)
+int TileMatrix::findFreeSpace(const sf::Vector2i& pos, const Taction& direction)
 {
-	Tile& tile = *m_matrix[pos.x][pos.y];
-	if (tile.getType() == m_maxType) return -1;
-
-	// Merge if both are moving
-	if (m_moveInstructions.size() != 0) {
-		Tile& neighbourMovingTile = *m_matrix[m_moveInstructions.back()->getOldPos().x][m_moveInstructions.back()->getOldPos().y];
-
-		if (m_moveInstructions.back()->getOldPos().y == pos.y &&
-			neighbourMovingTile.getType() == tile.getType() &&
-			neighbourMovingTile.getMerging() == false &&
-			tile.getMerging() == false) {
-
-			checkWin(tile);
-
-			m_mergedTiles = true;
-			neighbourMovingTile.setIsMerging(true);
-			tile.setIsMerging(true);
-			return m_moveInstructions.back()->getNewPos().x;
+	if (direction == Taction::UP) {
+		const int new_y = merge(pos, direction);
+		if (new_y != -1)
+			return new_y;
+		else {
+			for (size_t i = 0; i < pos.y; ++i)
+				if ((m_matrix[pos.x][i] == nullptr || m_matrix[pos.x][i]->getIsMoving()) && !willBeOccupied(sf::Vector2i(pos.x, i)))
+					return i;
+			return pos.y;
 		}
 	}
+	else if (direction == Taction::DOWN) {
+		const int new_y = merge(pos, direction);
+		if (new_y != -1)
+			return new_y;
+		else {
+			for (int i = m_matrixHeight - 1; i > pos.y; --i)
+				if ((m_matrix[pos.x][i] == nullptr || m_matrix[pos.x][i]->getIsMoving()) && !willBeOccupied(sf::Vector2i(pos.x, i)))
+					return i;
+			return pos.y;
+		}
+	}
+	else if (direction == Taction::LEFT) {
+		const int new_x = merge(pos, direction);
+		if (new_x != -1)
+			return new_x;
+		else {
+			for (size_t i = 0; i < pos.x; ++i)
+				if ((m_matrix[i][pos.y] == nullptr || m_matrix[i][pos.y]->getIsMoving()) && !willBeOccupied(sf::Vector2i(i, pos.y)))
+					return i;
+			return pos.x;
+		}
+	}
+	else if (direction == Taction::RIGHT) {
+		const int new_x = merge(pos, direction);
+		if (new_x != -1)
+			return new_x;
+		else {
+			for (size_t i = m_matrixWidth - 1; i > pos.x; --i)
+				if ((m_matrix[i][pos.y] == nullptr || m_matrix[i][pos.y]->getIsMoving()) && !willBeOccupied(sf::Vector2i(i, pos.y)))
+					return i;
+			return pos.x;
+		}
+	}
+	else
+		return -1;
+}
 
-	// Merge if only one is moving
-	for (int i = pos.x - 1; i >= 0; --i)
-		if (m_matrix[i][pos.y] != nullptr) {
-			if (m_matrix[i][pos.y]->getType() == tile.getType() && !m_matrix[i][pos.y]->getMerging() && !tile.getMerging()) {
+int TileMatrix::merge(const sf::Vector2i& pos, const Taction& direction)
+{
+	if (direction == Taction::UP) {
+		Tile& tile = *m_matrix[pos.x][pos.y];
+		if (tile == m_maxType) return -1;
+
+		// Merge if both are moving
+		if (m_moveInstructions.size() != 0) {
+			Tile& neighbourMovingTile = *m_matrix[m_moveInstructions.back()->getOldPos().x][m_moveInstructions.back()->getOldPos().y];
+
+			if (m_moveInstructions.back()->getOldPos().x == pos.x &&
+				neighbourMovingTile == tile &&
+				neighbourMovingTile.getMerging() == false &&
+				tile.getMerging() == false) {
 
 				checkWin(tile);
 				m_mergedTiles = true;
-				m_matrix[i][pos.y]->setIsMerging(true);
+				neighbourMovingTile.setIsMerging(true);
 				tile.setIsMerging(true);
-				return i;
+				return m_moveInstructions.back()->getNewPos().y;
 			}
-			else
-				break;
 		}
 
-	m_mergedTiles = false;
-	return -1;
-}
+		// Merge if only one is moving
+		for (int i = pos.y - 1; i >= 0; --i)
+			if (m_matrix[pos.x][i] != nullptr) {
+				if (*m_matrix[pos.x][i] == tile && !m_matrix[pos.x][i]->getMerging() && !tile.getMerging()) {
 
-int TileMatrix::mergeRight(const sf::Vector2i& pos)
-{
-	Tile& tile = *m_matrix[pos.x][pos.y];
-	if (tile.getType() == m_maxType) return -1;
+					checkWin(tile);
+					m_mergedTiles = true;
+					m_matrix[pos.x][i]->setIsMerging(true);
+					tile.setIsMerging(true);
+					return i;
+				}
+				else
+					break;
+			}
 
-	// Merge if both are moving
-	if (m_moveInstructions.size() != 0) {
-		Tile& neighbourMovingTile = *m_matrix[m_moveInstructions.back()->getOldPos().x][m_moveInstructions.back()->getOldPos().y];
-
-		if (m_moveInstructions.back()->getOldPos().y == pos.y &&
-			neighbourMovingTile.getType() == tile.getType() &&
-			neighbourMovingTile.getMerging() == false &&
-			tile.getMerging() == false) {
-
-			checkWin(tile);
-
-			m_mergedTiles = true;
-			neighbourMovingTile.setIsMerging(true);
-			tile.setIsMerging(true);
-			return m_moveInstructions.back()->getNewPos().x;
-		}
+		m_mergedTiles = false;
+		return -1;
 	}
+	else if (direction == Taction::DOWN) {
+		Tile& tile = *m_matrix[pos.x][pos.y];
+		if (tile == m_maxType) return -1;
 
-	// Merge if only one is moving
-	for (int i = pos.x + 1; i < m_matrixWidth; ++i)
-		if (m_matrix[i][pos.y] != nullptr) {
-			if (m_matrix[i][pos.y]->getType() == tile.getType() && !m_matrix[i][pos.y]->getMerging() && !tile.getMerging()) {
-				
+		// Merge if both are moving
+		if (m_moveInstructions.size() != 0) {
+			Tile& neighbourMovingTile = *m_matrix[m_moveInstructions.back()->getOldPos().x][m_moveInstructions.back()->getOldPos().y];
+
+			if (m_moveInstructions.back()->getOldPos().x == pos.x &&
+				neighbourMovingTile == tile &&
+				neighbourMovingTile.getMerging() == false &&
+				tile.getMerging() == false) {
+
 				checkWin(tile);
 				m_mergedTiles = true;
-				m_matrix[i][pos.y]->setIsMerging(true);
+				neighbourMovingTile.setIsMerging(true);
 				tile.setIsMerging(true);
-				return i;
+				return m_moveInstructions.back()->getNewPos().y;
 			}
-			else
-				break;
 		}
 
-	m_mergedTiles = false;
-	return -1;
-}
+		// Merge if only one is moving
+		for (int i = pos.y + 1; i < m_matrixHeight; ++i)
+			if (m_matrix[pos.x][i] != nullptr) {
+				if (*m_matrix[pos.x][i] == tile && !m_matrix[pos.x][i]->getMerging() && !tile.getMerging()) {
 
-int TileMatrix::mergeUp(const sf::Vector2i& pos)
-{
-	Tile& tile = *m_matrix[pos.x][pos.y];
-	if (tile.getType() == m_maxType) return -1;
+					checkWin(tile);
+					m_mergedTiles = true;
+					m_matrix[pos.x][i]->setIsMerging(true);
+					tile.setIsMerging(true);
+					return i;
+				}
+				else
+					break;
+			}
 
-	// Merge if both are moving
-	if (m_moveInstructions.size() != 0) {
-		Tile& neighbourMovingTile = *m_matrix[m_moveInstructions.back()->getOldPos().x][m_moveInstructions.back()->getOldPos().y];
-
-		if (m_moveInstructions.back()->getOldPos().x == pos.x &&
-			neighbourMovingTile.getType() == tile.getType() &&
-			neighbourMovingTile.getMerging() == false &&
-			tile.getMerging() == false) {
-
-			checkWin(tile);
-			m_mergedTiles = true;
-			neighbourMovingTile.setIsMerging(true);
-			tile.setIsMerging(true);
-			return m_moveInstructions.back()->getNewPos().y;
-		}
+		m_mergedTiles = false;
+		return -1;
 	}
+	else if (direction == Taction::LEFT) {
+		Tile& tile = *m_matrix[pos.x][pos.y];
+		if (tile == m_maxType) return -1;
 
-	// Merge if only one is moving
-	for (int i = pos.y - 1; i >= 0; --i)
-		if (m_matrix[pos.x][i] != nullptr) {
-			if (m_matrix[pos.x][i]->getType() == tile.getType() && !m_matrix[pos.x][i]->getMerging() && !tile.getMerging()) {
-				
+		// Merge if both are moving
+		if (m_moveInstructions.size() != 0) {
+			Tile& neighbourMovingTile = *m_matrix[m_moveInstructions.back()->getOldPos().x][m_moveInstructions.back()->getOldPos().y];
+
+			if (m_moveInstructions.back()->getOldPos().y == pos.y &&
+				neighbourMovingTile == tile &&
+				neighbourMovingTile.getMerging() == false &&
+				tile.getMerging() == false) {
+
 				checkWin(tile);
+
 				m_mergedTiles = true;
-				m_matrix[pos.x][i]->setIsMerging(true);
+				neighbourMovingTile.setIsMerging(true);
 				tile.setIsMerging(true);
-				return i;
+				return m_moveInstructions.back()->getNewPos().x;
 			}
-			else
-				break;
 		}
 
-	m_mergedTiles = false;
-	return -1;
-}
+		// Merge if only one is moving
+		for (int i = pos.x - 1; i >= 0; --i)
+			if (m_matrix[i][pos.y] != nullptr) {
+				if (*m_matrix[i][pos.y] == tile && !m_matrix[i][pos.y]->getMerging() && !tile.getMerging()) {
 
-int TileMatrix::mergeDown(const sf::Vector2i& pos)
-{
-	Tile& tile = *m_matrix[pos.x][pos.y];
-	if (tile.getType() == m_maxType) return -1;
+					checkWin(tile);
+					m_mergedTiles = true;
+					m_matrix[i][pos.y]->setIsMerging(true);
+					tile.setIsMerging(true);
+					return i;
+				}
+				else
+					break;
+			}
 
-	// Merge if both are moving
-	if (m_moveInstructions.size() != 0) {
-		Tile& neighbourMovingTile = *m_matrix[m_moveInstructions.back()->getOldPos().x][m_moveInstructions.back()->getOldPos().y];
-
-		if (m_moveInstructions.back()->getOldPos().x == pos.x &&
-			neighbourMovingTile.getType() == tile.getType() &&
-			neighbourMovingTile.getMerging() == false &&
-			tile.getMerging() == false) {
-
-			checkWin(tile);
-			m_mergedTiles = true;
-			neighbourMovingTile.setIsMerging(true);
-			tile.setIsMerging(true);
-			return m_moveInstructions.back()->getNewPos().y;
-		}
+		m_mergedTiles = false;
+		return -1;
 	}
+	else if (direction == Taction::RIGHT) {
+		Tile& tile = *m_matrix[pos.x][pos.y];
+		if (tile == m_maxType) return -1;
 
-	// Merge if only one is moving
-	for (int i = pos.y + 1; i < m_matrixHeight; ++i)
-		if (m_matrix[pos.x][i] != nullptr) {
-			if (m_matrix[pos.x][i]->getType() == tile.getType() && !m_matrix[pos.x][i]->getMerging() && !tile.getMerging()) {
-				
+		// Merge if both are moving
+		if (m_moveInstructions.size() != 0) {
+			Tile& neighbourMovingTile = *m_matrix[m_moveInstructions.back()->getOldPos().x][m_moveInstructions.back()->getOldPos().y];
+
+			if (m_moveInstructions.back()->getOldPos().y == pos.y &&
+				neighbourMovingTile == tile &&
+				neighbourMovingTile.getMerging() == false &&
+				tile.getMerging() == false) {
+
 				checkWin(tile);
+
 				m_mergedTiles = true;
-				m_matrix[pos.x][i]->setIsMerging(true);
+				neighbourMovingTile.setIsMerging(true);
 				tile.setIsMerging(true);
-				return i;
+				return m_moveInstructions.back()->getNewPos().x;
 			}
-			else
-				break;
 		}
 
-	m_mergedTiles = false;
-	return -1;
-}
+		// Merge if only one is moving
+		for (int i = pos.x + 1; i < m_matrixWidth; ++i)
+			if (m_matrix[i][pos.y] != nullptr) {
+				if (*m_matrix[i][pos.y] == tile && !m_matrix[i][pos.y]->getMerging() && !tile.getMerging()) {
 
-int TileMatrix::findFreeLeft(const sf::Vector2i& pos)
-{
-	const int new_x = mergeLeft(pos);
-	if (new_x != -1)
-		return new_x;
-	else {
-		for (size_t i = 0; i < pos.x; ++i)
-			if ((m_matrix[i][pos.y] == nullptr || m_matrix[i][pos.y]->getIsMoving()) && !willBeOccupied(sf::Vector2i(i, pos.y)))
-				return i;
-		return pos.x;
+					checkWin(tile);
+					m_mergedTiles = true;
+					m_matrix[i][pos.y]->setIsMerging(true);
+					tile.setIsMerging(true);
+					return i;
+				}
+				else
+					break;
+			}
+
+		m_mergedTiles = false;
+		return -1;
 	}
+	else
+		return -1;
 }
 
 void TileMatrix::checkWin(const Tile& tile)
 {
-	if (tile.getType() == 1024 && !m_isWin) {
+	if (tile == 1024 && !m_isWin) {
 		m_isWin = true;
 
 		for (size_t x = 0; x < m_matrixWidth; ++x)
@@ -218,186 +253,136 @@ void TileMatrix::checkWin(const Tile& tile)
 	}
 }
 
-int TileMatrix::findFreeRight(const sf::Vector2i& pos)
+void TileMatrix::move(const Taction& direction)
 {
-	const int new_x = mergeRight(pos);
-	if (new_x != -1)
-		return new_x;
-	else {
-		for (size_t i = m_matrixWidth - 1; i > pos.x; --i)
-			if ((m_matrix[i][pos.y] == nullptr || m_matrix[i][pos.y]->getIsMoving()) && !willBeOccupied(sf::Vector2i(i, pos.y)))
-				return i;
-		return pos.x;
+	if (m_state == Tstate::MOVING) {
+		endMove();
+		endMerge();
 	}
-}
+	else if (m_state == Tstate::MERGING)
+		endMerge();
 
-int TileMatrix::findFreeUp(const sf::Vector2i& pos)
-{
-	const int new_y = mergeUp(pos);
-	if (new_y != -1)
-		return new_y;
-	else {
-		for (size_t i = 0; i < pos.y; ++i)
-			if ((m_matrix[pos.x][i] == nullptr || m_matrix[pos.x][i]->getIsMoving()) && !willBeOccupied(sf::Vector2i(pos.x, i)))
-				return i;
-		return pos.y;
-	}
-
-}
-
-int TileMatrix::findFreeDown(const sf::Vector2i& pos)
-{
-	const int new_y = mergeDown(pos);
-	if (new_y != -1)
-		return new_y;
-	else {
-		for (int i = m_matrixHeight - 1; i > pos.y; --i)
-			if ((m_matrix[pos.x][i] == nullptr || m_matrix[pos.x][i]->getIsMoving()) && !willBeOccupied(sf::Vector2i(pos.x, i)))
-				return i;
-		return pos.y;
-	}
-}
-
-void TileMatrix::moveLeft()
-{
-	endMerge();
-	for (int j = 0; j < m_matrixHeight; ++j)
+	if (direction == Taction::UP) {
 		for (int i = 0; i < m_matrixWidth; ++i)
-			if (m_matrix[i][j] != nullptr) {
-				const sf::Vector2i new_pos{ findFreeLeft(sf::Vector2i(i, j)), j };
-				const int distance = i - new_pos.x;
+			for (int j = 0; j < m_matrixHeight; ++j)
+				if (m_matrix[i][j] != nullptr) {
+					const sf::Vector2i new_pos{ i, findFreeSpace(sf::Vector2i(i, j), direction) };
+					const int distance = j - new_pos.y;
 
-				if (distance > 0) {
-					const float pixel_distance = static_cast<float>(distance) * (*m_innerEdgeWidth + *m_tileWidth);
-					m_matrix[i][j]->smoothMove(sf::Vector2f(-pixel_distance, 0.f), m_timeMovingMax);
-					addMoveInstructions(new_pos, sf::Vector2i{ i, j });
+					if (distance > 0) {
+						const float pixel_distance = static_cast<float>(distance) * (*m_innerEdgeWidth + *m_tileWidth);
+						m_matrix[i][j]->smoothMove(sf::Vector2f(0.f, -pixel_distance), m_timeMovingMax);
+						addMoveInstructions(new_pos, sf::Vector2i{ i, j });
+					}
 				}
-			}
-}
-
-void TileMatrix::moveRight()
-{
-	endMerge();
-	for (int j = 0; j < m_matrixHeight; ++j)
-		for (int i = m_matrixWidth - 1; i >= 0; --i)
-			if (m_matrix[i][j] != nullptr) {
-				const sf::Vector2i new_pos{ findFreeRight(sf::Vector2i(i, j)), j };
-				const int distance = new_pos.x - i;
-
-				if (distance > 0) {
-					const float pixel_distance = static_cast<float>(distance) * (*m_innerEdgeWidth + *m_tileWidth);
-					m_matrix[i][j]->smoothMove(sf::Vector2f(pixel_distance, 0.f), m_timeMovingMax);
-					addMoveInstructions(new_pos, sf::Vector2i{ i, j });
-				}
-			}
-}
-
-void TileMatrix::moveUp()
-{
-	endMerge();
-	for (int i = 0; i < m_matrixWidth; ++i)
-		for (int j = 0; j < m_matrixHeight; ++j)
-			if (m_matrix[i][j] != nullptr) {
-				const sf::Vector2i new_pos{ i, findFreeUp(sf::Vector2i(i, j)) };
-				const int distance = j - new_pos.y;
-
-				if (distance > 0) {
-					const float pixel_distance = static_cast<float>(distance) * (*m_innerEdgeWidth + *m_tileWidth);
-					m_matrix[i][j]->smoothMove(sf::Vector2f(0.f, -pixel_distance), m_timeMovingMax);
-					addMoveInstructions(new_pos, sf::Vector2i{ i, j });
-				}
-			}
-}
-
-void TileMatrix::moveDown()
-{
-	endMerge();
-	for (int i = 0; i < m_matrixWidth; ++i)
-		for (int j = m_matrixHeight - 1; j >= 0; --j)
-			if (m_matrix[i][j] != nullptr) {
-				const sf::Vector2i new_pos{ i, findFreeDown(sf::Vector2i(i, j)) };
-				const int distance = new_pos.y - j;
-
-				if (distance > 0) {
-					const float pixel_distance = static_cast<float>(distance) * (*m_innerEdgeWidth + *m_tileWidth);
-					m_matrix[i][j]->smoothMove(sf::Vector2f(0.f, pixel_distance), m_timeMovingMax);
-					addMoveInstructions(new_pos, sf::Vector2i{ i, j });
-				}
-			}
-}
-
-void TileMatrix::instantMoveLeft()
-{
-	for (int j = 0; j < m_matrixHeight; ++j)
+	}
+	else if (direction == Taction::DOWN) {
 		for (int i = 0; i < m_matrixWidth; ++i)
-			if (m_matrix[i][j] != nullptr) {
-				const sf::Vector2i new_pos{ findFreeLeft(sf::Vector2i(i, j)), j };
-				const int distance = i - new_pos.x;
+			for (int j = m_matrixHeight - 1; j >= 0; --j)
+				if (m_matrix[i][j] != nullptr) {
+					const sf::Vector2i new_pos{ i, findFreeSpace(sf::Vector2i(i, j), direction) };
+					const int distance = new_pos.y - j;
 
-				if (distance > 0) {
-					const float pixel_distance = static_cast<float>(distance) * (*m_innerEdgeWidth + *m_tileWidth);
-					m_matrix[i][j]->instantMove(sf::Vector2f(-pixel_distance, 0.f));
-					addMoveInstructions(new_pos, sf::Vector2i{ i, j });
+					if (distance > 0) {
+						const float pixel_distance = static_cast<float>(distance) * (*m_innerEdgeWidth + *m_tileWidth);
+						m_matrix[i][j]->smoothMove(sf::Vector2f(0.f, pixel_distance), m_timeMovingMax);
+						addMoveInstructions(new_pos, sf::Vector2i{ i, j });
+					}
 				}
-			}
-
-	endMove();
-	endMerge();
-}
-
-void TileMatrix::instantMoveRight()
-{
-	for (int j = 0; j < m_matrixHeight; ++j)
-		for (int i = m_matrixWidth - 1; i >= 0; --i)
-			if (m_matrix[i][j] != nullptr) {
-				const sf::Vector2i new_pos{ findFreeRight(sf::Vector2i(i, j)), j };
-				const int distance = new_pos.x - i;
-
-				if (distance > 0) {
-					const float pixel_distance = static_cast<float>(distance) * (*m_innerEdgeWidth + *m_tileWidth);
-					m_matrix[i][j]->instantMove(sf::Vector2f(pixel_distance, 0.f));
-					addMoveInstructions(new_pos, sf::Vector2i{ i, j });
-				}
-			}
-
-
-	endMove();
-	endMerge();
-}
-
-void TileMatrix::instantMoveUp()
-{
-	for (int i = 0; i < m_matrixWidth; ++i)
+	}
+	else if (direction == Taction::LEFT) {
 		for (int j = 0; j < m_matrixHeight; ++j)
-			if (m_matrix[i][j] != nullptr) {
-				const sf::Vector2i new_pos{ i, findFreeUp(sf::Vector2i(i, j)) };
-				const int distance = j - new_pos.y;
+			for (int i = 0; i < m_matrixWidth; ++i)
+				if (m_matrix[i][j] != nullptr) {
+					const sf::Vector2i new_pos{ findFreeSpace(sf::Vector2i(i, j), direction), j };
+					const int distance = i - new_pos.x;
 
-				if (distance > 0) {
-					const float pixel_distance = static_cast<float>(distance) * (*m_innerEdgeWidth + *m_tileWidth);
-					m_matrix[i][j]->instantMove(sf::Vector2f(0.f, -pixel_distance));
-					addMoveInstructions(new_pos, sf::Vector2i{ i, j });
+					if (distance > 0) {
+						const float pixel_distance = static_cast<float>(distance) * (*m_innerEdgeWidth + *m_tileWidth);
+						m_matrix[i][j]->smoothMove(sf::Vector2f(-pixel_distance, 0.f), m_timeMovingMax);
+						addMoveInstructions(new_pos, sf::Vector2i{ i, j });
+					}
 				}
-			}
+	}
+	else if (direction == Taction::RIGHT) {
+		for (int j = 0; j < m_matrixHeight; ++j)
+			for (int i = m_matrixWidth - 1; i >= 0; --i)
+				if (m_matrix[i][j] != nullptr) {
+					const sf::Vector2i new_pos{ findFreeSpace(sf::Vector2i(i, j), direction), j };
+					const int distance = new_pos.x - i;
 
-	endMove();
-	endMerge();
+					if (distance > 0) {
+						const float pixel_distance = static_cast<float>(distance) * (*m_innerEdgeWidth + *m_tileWidth);
+						m_matrix[i][j]->smoothMove(sf::Vector2f(pixel_distance, 0.f), m_timeMovingMax);
+						addMoveInstructions(new_pos, sf::Vector2i{ i, j });
+					}
+				}
+	}
 }
 
-void TileMatrix::instantMoveDown()
+void TileMatrix::instantMove(const Taction& direction)
 {
-	for (int i = 0; i < m_matrixWidth; ++i)
-		for (int j = m_matrixHeight - 1; j >= 0; --j)
-			if (m_matrix[i][j] != nullptr) {
-				const sf::Vector2i new_pos{ i, findFreeDown(sf::Vector2i(i, j)) };
-				const int distance = new_pos.y - j;
+	if (m_state != Tstate::IDLE) {
+		endMove();
+		endMerge();
+	}
 
-				if (distance > 0) {
-					const float pixel_distance = static_cast<float>(distance) * (*m_innerEdgeWidth + *m_tileWidth);
-					m_matrix[i][j]->instantMove(sf::Vector2f(0.f, pixel_distance));
-					addMoveInstructions(new_pos, sf::Vector2i{ i, j });
+	if (direction == Taction::UP) {
+		for (int i = 0; i < m_matrixWidth; ++i)
+			for (int j = 0; j < m_matrixHeight; ++j)
+				if (m_matrix[i][j] != nullptr) {
+					const sf::Vector2i new_pos{ i, findFreeSpace(sf::Vector2i(i, j), direction) };
+					const int distance = j - new_pos.y;
+
+					if (distance > 0) {
+						const float pixel_distance = static_cast<float>(distance) * (*m_innerEdgeWidth + *m_tileWidth);
+						m_matrix[i][j]->instantMove(sf::Vector2f(0.f, -pixel_distance));
+						addMoveInstructions(new_pos, sf::Vector2i{ i, j });
+					}
 				}
-			}
+	}
+	else if (direction == Taction::DOWN) {
+		for (int i = 0; i < m_matrixWidth; ++i)
+			for (int j = m_matrixHeight - 1; j >= 0; --j)
+				if (m_matrix[i][j] != nullptr) {
+					const sf::Vector2i new_pos{ i, findFreeSpace(sf::Vector2i(i, j), direction) };
+					const int distance = new_pos.y - j;
+
+					if (distance > 0) {
+						const float pixel_distance = static_cast<float>(distance) * (*m_innerEdgeWidth + *m_tileWidth);
+						m_matrix[i][j]->instantMove(sf::Vector2f(0.f, pixel_distance));
+						addMoveInstructions(new_pos, sf::Vector2i{ i, j });
+					}
+				}
+	}
+	else if (direction == Taction::LEFT) {
+		for (int j = 0; j < m_matrixHeight; ++j)
+			for (int i = 0; i < m_matrixWidth; ++i)
+				if (m_matrix[i][j] != nullptr) {
+					const sf::Vector2i new_pos{ findFreeSpace(sf::Vector2i(i, j), direction), j };
+					const int distance = i - new_pos.x;
+
+					if (distance > 0) {
+						const float pixel_distance = static_cast<float>(distance) * (*m_innerEdgeWidth + *m_tileWidth);
+						m_matrix[i][j]->instantMove(sf::Vector2f(-pixel_distance, 0.f));
+						addMoveInstructions(new_pos, sf::Vector2i{ i, j });
+					}
+				}
+	}
+	else if (direction == Taction::RIGHT) {
+		for (int j = 0; j < m_matrixHeight; ++j)
+			for (int i = m_matrixWidth - 1; i >= 0; --i)
+				if (m_matrix[i][j] != nullptr) {
+					const sf::Vector2i new_pos{ findFreeSpace(sf::Vector2i(i, j), direction), j };
+					const int distance = new_pos.x - i;
+
+					if (distance > 0) {
+						const float pixel_distance = static_cast<float>(distance) * (*m_innerEdgeWidth + *m_tileWidth);
+						m_matrix[i][j]->instantMove(sf::Vector2f(pixel_distance, 0.f));
+						addMoveInstructions(new_pos, sf::Vector2i{ i, j });
+					}
+				}
+	}
 
 	endMove();
 	endMerge();
@@ -597,18 +582,18 @@ bool TileMatrix::isGameOver()
 
 		for (size_t i = 0; i < m_matrixHeight - 1; ++i)
 			for (size_t j = 0; j < m_matrixWidth - 1; ++j) {
-				if (m_matrix[j][i]->getType() == m_matrix[j + 1][i]->getType())
+				if (*m_matrix[j][i] == *m_matrix[j + 1][i])
 					return false;
-				if (m_matrix[j][i]->getType() == m_matrix[j][i + 1]->getType())
+				if (*m_matrix[j][i] == *m_matrix[j][i + 1])
 					return false;
 			}
 
 		for (size_t i = 0; i < m_matrixHeight - 1; ++i)
-			if (m_matrix[m_matrixWidth - 1][i]->getType() == m_matrix[m_matrixWidth - 1][i + 1]->getType())
+			if (*m_matrix[m_matrixWidth - 1][i] == *m_matrix[m_matrixWidth - 1][i + 1])
 				return false;
 
 		for (size_t i = 0; i < m_matrixWidth - 1; ++i)
-			if (m_matrix[i][m_matrixHeight - 1]->getType() == m_matrix[i + 1][m_matrixHeight - 1]->getType())
+			if (*m_matrix[i][m_matrixHeight - 1] == *m_matrix[i + 1][m_matrixHeight - 1])
 				return false;
 
 		// Game Over
@@ -696,9 +681,7 @@ State* const TileMatrix::getState() const
 			else 
 				state->board[i][j] = 0;
 		}
-	}
-		
-			
+	}	
 
 	return state;
 }

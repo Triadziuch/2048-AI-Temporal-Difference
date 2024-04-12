@@ -144,6 +144,32 @@ sf::Sprite* Tile::getSprite()
 	return &m_sprite;
 }
 
+bool Tile::operator==(const int& value) const
+{
+	return m_type == value;
+}
+
+bool Tile::operator==(const Tile* const other) const
+{
+	return m_type == other->m_type;
+}
+
+// Overriden operators
+bool Tile::operator==(const Tile& other) const
+{
+	return m_type == other.m_type;
+}
+
+bool Tile::operator>(const int& value) const
+{
+	return m_type > value;
+}
+
+bool Tile::operator<(const int& value) const
+{
+	return m_type < value;
+}
+
 // Rendering functions
 void Tile::render(sf::RenderTarget& target)
 {
