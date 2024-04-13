@@ -27,6 +27,8 @@ private:
 	void addMoveInstructions(const sf::Vector2i& newPos, const sf::Vector2i& oldPos);
 	bool m_mergedTiles = false;
 
+	int tiles = 0;
+	int max_tiles{};
 	const int m_maxType = 4096;
 	bool debug = false;
 
@@ -34,11 +36,12 @@ public:
 	size_t WIDTH{}, HEIGHT{};
 
 	State() = delete;
-	State(const size_t& width = 4, const size_t& height = 4);
+	State(const int tiles, const size_t& width = 4, const size_t& height = 4);
 	State(const State& other);
 	~State();
 
 	int move(Taction direction);
+	std::vector <Taction>& getAvailableMoves() const;
 	bool isMovePossible(Taction direction);
 
 	const void display(const std::string& text = "") const;

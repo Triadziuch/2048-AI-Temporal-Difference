@@ -6,6 +6,7 @@
 
 #include <filesystem>
 #include <random>
+#include <thread>
 
 class Agent
 {
@@ -15,8 +16,8 @@ private:
 	NTuples m_LUTs;
 
 	// Configuration
-	double learningRate    = 0.0025;
-	double explorationRate = 0.00025;
+	double learningRate    = 0.01;
+	double explorationRate = 0.001;
 	bool learningEnabled = true;
 	bool loggingEnabled = true;
 	bool resumeLearning = true;

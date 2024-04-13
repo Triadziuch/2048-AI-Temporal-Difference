@@ -12,160 +12,322 @@ bool State::willBeOccupied(const sf::Vector2i& pos) const
 const int State::merge(const sf::Vector2i& pos, const Taction& direction)
 {
 	int tile = board[pos.x][pos.y];
+	if (tile == m_maxType) 
+		return -1;
 
-	if (direction == Taction::UP) {
-		int& tile = board[pos.x][pos.y];
-		if (tile == m_maxType) return -1;
+	switch (direction) {
+		case Taction::UP:
+			// Merge if both are moving
+			if (m_moveInstructions.size() != 0) {
+				int& neighbourMovingTile = board[m_moveInstructions.back()->getOldPos().x][m_moveInstructions.back()->getOldPos().y];
 
-		// Merge if both are moving
-		if (m_moveInstructions.size() != 0) {
-			int& neighbourMovingTile = board[m_moveInstructions.back()->getOldPos().x][m_moveInstructions.back()->getOldPos().y];
-
-			if (m_moveInstructions.back()->getOldPos().x == pos.x &&
-				neighbourMovingTile == tile &&
-				board_merging[m_moveInstructions.back()->getOldPos().x][m_moveInstructions.back()->getOldPos().y] == false &&
-				board_merging[pos.x][pos.y] == false) {
-
-				m_mergedTiles = true;
-				board_merging[m_moveInstructions.back()->getOldPos().x][m_moveInstructions.back()->getOldPos().y] = true;
-				board_merging[pos.x][pos.y] = true;
-				return m_moveInstructions.back()->getNewPos().y;
-			}
-		}
-
-		// Merge if only one is moving
-		for (int i = pos.y - 1; i >= 0; --i)
-			if (board[pos.x][i] != 0) {
-				if (board[pos.x][i] == board[pos.x][pos.y] && !board_merging[pos.x][i] && !board_merging[pos.x][pos.y]) {
+				if (m_moveInstructions.back()->getOldPos().x == pos.x &&
+					neighbourMovingTile == tile &&
+					board_merging[m_moveInstructions.back()->getOldPos().x][m_moveInstructions.back()->getOldPos().y] == false &&
+					board_merging[pos.x][pos.y] == false) {
 
 					m_mergedTiles = true;
-					board_merging[pos.x][i] = true;
+					board_merging[m_moveInstructions.back()->getOldPos().x][m_moveInstructions.back()->getOldPos().y] = true;
 					board_merging[pos.x][pos.y] = true;
-					return i;
+					return m_moveInstructions.back()->getNewPos().y;
 				}
-				else
-					break;
 			}
 
-		m_mergedTiles = false;
-		return -1;
-	}
-	else if (direction == Taction::DOWN) {
-		int& tile = board[pos.x][pos.y];
-		if (tile == m_maxType) return -1;
+			// Merge if only one is moving
+			for (int i = pos.y - 1; i >= 0; --i)
+				if (board[pos.x][i] != 0) {
+					if (board[pos.x][i] == board[pos.x][pos.y] && !board_merging[pos.x][i] && !board_merging[pos.x][pos.y]) {
 
-		// Merge if both are moving
-		if (m_moveInstructions.size() != 0) {
-			int& neighbourMovingTile = board[m_moveInstructions.back()->getOldPos().x][m_moveInstructions.back()->getOldPos().y];
+						m_mergedTiles = true;
+						board_merging[pos.x][i] = true;
+						board_merging[pos.x][pos.y] = true;
+						return i;
+					}
+					else
+						break;
+				}
 
-			if (m_moveInstructions.back()->getOldPos().x == pos.x &&
-				neighbourMovingTile == tile &&
-				board_merging[m_moveInstructions.back()->getOldPos().x][m_moveInstructions.back()->getOldPos().y] == false &&
-				board_merging[pos.x][pos.y] == false) {
+			m_mergedTiles = false;
+			return -1;
+			break;
+		case Taction::DOWN:
+			// Merge if both are moving
+			if (m_moveInstructions.size() != 0) {
+				int& neighbourMovingTile = board[m_moveInstructions.back()->getOldPos().x][m_moveInstructions.back()->getOldPos().y];
 
-				m_mergedTiles = true;
-				board_merging[m_moveInstructions.back()->getOldPos().x][m_moveInstructions.back()->getOldPos().y] = true;
-				board_merging[pos.x][pos.y] = true;
-				return m_moveInstructions.back()->getNewPos().y;
-			}
-		}
-
-		// Merge if only one is moving
-		for (int i = pos.y + 1; i < HEIGHT; ++i)
-			if (board[pos.x][i] != 0) {
-				if (board[pos.x][i] == board[pos.x][pos.y] && !board_merging[pos.x][i] && !board_merging[pos.x][pos.y]) {
+				if (m_moveInstructions.back()->getOldPos().x == pos.x &&
+					neighbourMovingTile == tile &&
+					board_merging[m_moveInstructions.back()->getOldPos().x][m_moveInstructions.back()->getOldPos().y] == false &&
+					board_merging[pos.x][pos.y] == false) {
 
 					m_mergedTiles = true;
-					board_merging[pos.x][i] = true;
+					board_merging[m_moveInstructions.back()->getOldPos().x][m_moveInstructions.back()->getOldPos().y] = true;
 					board_merging[pos.x][pos.y] = true;
-					return i;
+					return m_moveInstructions.back()->getNewPos().y;
 				}
-				else
-					break;
 			}
 
-		m_mergedTiles = false;
-		return -1;
-	}
-	else if (direction == Taction::LEFT) {
-		int& tile = board[pos.x][pos.y];
-		if (tile == m_maxType) return -1;
+			// Merge if only one is moving
+			for (int i = pos.y + 1; i < HEIGHT; ++i)
+				if (board[pos.x][i] != 0) {
+					if (board[pos.x][i] == board[pos.x][pos.y] && !board_merging[pos.x][i] && !board_merging[pos.x][pos.y]) {
 
-		// Merge if both are moving
-		if (m_moveInstructions.size() != 0) {
-			int& neighbourMovingTile = board[m_moveInstructions.back()->getOldPos().x][m_moveInstructions.back()->getOldPos().y];
+						m_mergedTiles = true;
+						board_merging[pos.x][i] = true;
+						board_merging[pos.x][pos.y] = true;
+						return i;
+					}
+					else
+						break;
+				}
 
-			if (m_moveInstructions.back()->getOldPos().y == pos.y &&
-				neighbourMovingTile == tile &&
-				board_merging[m_moveInstructions.back()->getOldPos().x][m_moveInstructions.back()->getOldPos().y] == false &&
-				board_merging[pos.x][pos.y] == false) {
+			m_mergedTiles = false;
+			return -1;
+			break;
 
-				m_mergedTiles = true;
-				board_merging[m_moveInstructions.back()->getOldPos().x][m_moveInstructions.back()->getOldPos().y] = true;
-				board_merging[pos.x][pos.y] = true;
-				return m_moveInstructions.back()->getNewPos().x;
-			}
-		}
+		case Taction::LEFT:
+			// Merge if both are moving
+			if (m_moveInstructions.size() != 0) {
+				int& neighbourMovingTile = board[m_moveInstructions.back()->getOldPos().x][m_moveInstructions.back()->getOldPos().y];
 
-		// Merge if only one is moving
-		for (int i = pos.x - 1; i >= 0; --i)
-			if (board[i][pos.y] != 0) {
-				if (board[i][pos.y] == board[pos.x][pos.y] && !board_merging[i][pos.y] && !board_merging[pos.x][pos.y]) {
+				if (m_moveInstructions.back()->getOldPos().y == pos.y &&
+					neighbourMovingTile == tile &&
+					board_merging[m_moveInstructions.back()->getOldPos().x][m_moveInstructions.back()->getOldPos().y] == false &&
+					board_merging[pos.x][pos.y] == false) {
 
 					m_mergedTiles = true;
-					board_merging[i][pos.y] = true;
+					board_merging[m_moveInstructions.back()->getOldPos().x][m_moveInstructions.back()->getOldPos().y] = true;
 					board_merging[pos.x][pos.y] = true;
-					return i;
+					return m_moveInstructions.back()->getNewPos().x;
 				}
-				else
-					break;
 			}
 
-		m_mergedTiles = false;
-		return -1;
-	}
-	else if (direction == Taction::RIGHT) {
-		int& tile = board[pos.x][pos.y];
-		if (tile == m_maxType) return -1;
+			// Merge if only one is moving
+			for (int i = pos.x - 1; i >= 0; --i)
+				if (board[i][pos.y] != 0) {
+					if (board[i][pos.y] == board[pos.x][pos.y] && !board_merging[i][pos.y] && !board_merging[pos.x][pos.y]) {
 
-		// Merge if both are moving
-		if (m_moveInstructions.size() != 0) {
-			int& neighbourMovingTile = board[m_moveInstructions.back()->getOldPos().x][m_moveInstructions.back()->getOldPos().y];
+						m_mergedTiles = true;
+						board_merging[i][pos.y] = true;
+						board_merging[pos.x][pos.y] = true;
+						return i;
+					}
+					else
+						break;
+				}
 
-			if (m_moveInstructions.back()->getOldPos().y == pos.y &&
-				neighbourMovingTile == tile &&
-				board_merging[m_moveInstructions.back()->getOldPos().x][m_moveInstructions.back()->getOldPos().y] == false &&
-				board_merging[pos.x][pos.y] == false) {
+			m_mergedTiles = false;
+			return -1;
+			break;
 
-				m_mergedTiles = true;
-				board_merging[m_moveInstructions.back()->getOldPos().x][m_moveInstructions.back()->getOldPos().y] = true;
-				board_merging[pos.x][pos.y] = true;
-				return m_moveInstructions.back()->getNewPos().x;
-			}
-		}
+		case Taction::RIGHT:
+			// Merge if both are moving
+			if (m_moveInstructions.size() != 0) {
+				int& neighbourMovingTile = board[m_moveInstructions.back()->getOldPos().x][m_moveInstructions.back()->getOldPos().y];
 
-		// Merge if only one is moving
-		for (int i = pos.x + 1; i < WIDTH; ++i)
-			if (board[i][pos.y] != 0) {
-				if (board[i][pos.y] == board[pos.x][pos.y] && !board_merging[i][pos.y] && !board_merging[pos.x][pos.y]) {
+				if (m_moveInstructions.back()->getOldPos().y == pos.y &&
+					neighbourMovingTile == tile &&
+					board_merging[m_moveInstructions.back()->getOldPos().x][m_moveInstructions.back()->getOldPos().y] == false &&
+					board_merging[pos.x][pos.y] == false) {
 
 					m_mergedTiles = true;
-					board_merging[i][pos.y] = true;
+					board_merging[m_moveInstructions.back()->getOldPos().x][m_moveInstructions.back()->getOldPos().y] = true;
 					board_merging[pos.x][pos.y] = true;
-					return i;
+					return m_moveInstructions.back()->getNewPos().x;
 				}
-				else
-					break;
 			}
 
-		m_mergedTiles = false;
-		return -1;
+			// Merge if only one is moving
+			for (int i = pos.x + 1; i < WIDTH; ++i)
+				if (board[i][pos.y] != 0) {
+					if (board[i][pos.y] == board[pos.x][pos.y] && !board_merging[i][pos.y] && !board_merging[pos.x][pos.y]) {
+
+						m_mergedTiles = true;
+						board_merging[i][pos.y] = true;
+						board_merging[pos.x][pos.y] = true;
+						return i;
+					}
+					else
+						break;
+				}
+
+			m_mergedTiles = false;
+			return -1;
+			break;
 	}
+
+	//if (direction == Taction::UP) {
+	//	// Merge if both are moving
+	//	if (m_moveInstructions.size() != 0) {
+	//		int& neighbourMovingTile = board[m_moveInstructions.back()->getOldPos().x][m_moveInstructions.back()->getOldPos().y];
+
+	//		if (m_moveInstructions.back()->getOldPos().x == pos.x &&
+	//			neighbourMovingTile == tile &&
+	//			board_merging[m_moveInstructions.back()->getOldPos().x][m_moveInstructions.back()->getOldPos().y] == false &&
+	//			board_merging[pos.x][pos.y] == false) {
+
+	//			m_mergedTiles = true;
+	//			board_merging[m_moveInstructions.back()->getOldPos().x][m_moveInstructions.back()->getOldPos().y] = true;
+	//			board_merging[pos.x][pos.y] = true;
+	//			return m_moveInstructions.back()->getNewPos().y;
+	//		}
+	//	}
+
+	//	// Merge if only one is moving
+	//	for (int i = pos.y - 1; i >= 0; --i)
+	//		if (board[pos.x][i] != 0) {
+	//			if (board[pos.x][i] == board[pos.x][pos.y] && !board_merging[pos.x][i] && !board_merging[pos.x][pos.y]) {
+
+	//				m_mergedTiles = true;
+	//				board_merging[pos.x][i] = true;
+	//				board_merging[pos.x][pos.y] = true;
+	//				return i;
+	//			}
+	//			else
+	//				break;
+	//		}
+
+	//	m_mergedTiles = false;
+	//	return -1;
+	//}
+	//else if (direction == Taction::DOWN) {
+	//	// Merge if both are moving
+	//	if (m_moveInstructions.size() != 0) {
+	//		int& neighbourMovingTile = board[m_moveInstructions.back()->getOldPos().x][m_moveInstructions.back()->getOldPos().y];
+
+	//		if (m_moveInstructions.back()->getOldPos().x == pos.x &&
+	//			neighbourMovingTile == tile &&
+	//			board_merging[m_moveInstructions.back()->getOldPos().x][m_moveInstructions.back()->getOldPos().y] == false &&
+	//			board_merging[pos.x][pos.y] == false) {
+
+	//			m_mergedTiles = true;
+	//			board_merging[m_moveInstructions.back()->getOldPos().x][m_moveInstructions.back()->getOldPos().y] = true;
+	//			board_merging[pos.x][pos.y] = true;
+	//			return m_moveInstructions.back()->getNewPos().y;
+	//		}
+	//	}
+
+	//	// Merge if only one is moving
+	//	for (int i = pos.y + 1; i < HEIGHT; ++i)
+	//		if (board[pos.x][i] != 0) {
+	//			if (board[pos.x][i] == board[pos.x][pos.y] && !board_merging[pos.x][i] && !board_merging[pos.x][pos.y]) {
+
+	//				m_mergedTiles = true;
+	//				board_merging[pos.x][i] = true;
+	//				board_merging[pos.x][pos.y] = true;
+	//				return i;
+	//			}
+	//			else
+	//				break;
+	//		}
+
+	//	m_mergedTiles = false;
+	//	return -1;
+	//}
+	//else if (direction == Taction::LEFT) {
+	//	// Merge if both are moving
+	//	if (m_moveInstructions.size() != 0) {
+	//		int& neighbourMovingTile = board[m_moveInstructions.back()->getOldPos().x][m_moveInstructions.back()->getOldPos().y];
+
+	//		if (m_moveInstructions.back()->getOldPos().y == pos.y &&
+	//			neighbourMovingTile == tile &&
+	//			board_merging[m_moveInstructions.back()->getOldPos().x][m_moveInstructions.back()->getOldPos().y] == false &&
+	//			board_merging[pos.x][pos.y] == false) {
+
+	//			m_mergedTiles = true;
+	//			board_merging[m_moveInstructions.back()->getOldPos().x][m_moveInstructions.back()->getOldPos().y] = true;
+	//			board_merging[pos.x][pos.y] = true;
+	//			return m_moveInstructions.back()->getNewPos().x;
+	//		}
+	//	}
+
+	//	// Merge if only one is moving
+	//	for (int i = pos.x - 1; i >= 0; --i)
+	//		if (board[i][pos.y] != 0) {
+	//			if (board[i][pos.y] == board[pos.x][pos.y] && !board_merging[i][pos.y] && !board_merging[pos.x][pos.y]) {
+
+	//				m_mergedTiles = true;
+	//				board_merging[i][pos.y] = true;
+	//				board_merging[pos.x][pos.y] = true;
+	//				return i;
+	//			}
+	//			else
+	//				break;
+	//		}
+
+	//	m_mergedTiles = false;
+	//	return -1;
+	//}
+	//else if (direction == Taction::RIGHT) {
+	//	// Merge if both are moving
+	//	if (m_moveInstructions.size() != 0) {
+	//		int& neighbourMovingTile = board[m_moveInstructions.back()->getOldPos().x][m_moveInstructions.back()->getOldPos().y];
+
+	//		if (m_moveInstructions.back()->getOldPos().y == pos.y &&
+	//			neighbourMovingTile == tile &&
+	//			board_merging[m_moveInstructions.back()->getOldPos().x][m_moveInstructions.back()->getOldPos().y] == false &&
+	//			board_merging[pos.x][pos.y] == false) {
+
+	//			m_mergedTiles = true;
+	//			board_merging[m_moveInstructions.back()->getOldPos().x][m_moveInstructions.back()->getOldPos().y] = true;
+	//			board_merging[pos.x][pos.y] = true;
+	//			return m_moveInstructions.back()->getNewPos().x;
+	//		}
+	//	}
+
+	//	// Merge if only one is moving
+	//	for (int i = pos.x + 1; i < WIDTH; ++i)
+	//		if (board[i][pos.y] != 0) {
+	//			if (board[i][pos.y] == board[pos.x][pos.y] && !board_merging[i][pos.y] && !board_merging[pos.x][pos.y]) {
+
+	//				m_mergedTiles = true;
+	//				board_merging[i][pos.y] = true;
+	//				board_merging[pos.x][pos.y] = true;
+	//				return i;
+	//			}
+	//			else
+	//				break;
+	//		}
+
+	//	m_mergedTiles = false;
+	//	return -1;
+	//}
 }
 
 const int State::findFreeSpace(const sf::Vector2i& pos, const Taction& direction)
 {
-	if (direction == Taction::UP) {
+	const int new_pos = merge(pos, direction);
+	if (new_pos != -1)
+		return new_pos;
+
+	switch (direction) {
+		case Taction::UP:
+			for (size_t i = 0; i < pos.y; ++i)
+				if ((board[pos.x][i] == 0 || board_moving[pos.x][i]) && !willBeOccupied(sf::Vector2i(pos.x, i)))
+					return i;
+			return pos.y;
+			break;
+		case Taction::DOWN:
+			for (int i = HEIGHT - 1; i > pos.y; --i)
+				if ((board[pos.x][i] == 0 || board_moving[pos.x][i]) && !willBeOccupied(sf::Vector2i(pos.x, i)))
+					return i;
+			return pos.y;
+			break;
+		case Taction::LEFT:
+			for (size_t i = 0; i < pos.x; ++i)
+				if ((board[i][pos.y] == 0 || board_moving[i][pos.y]) && !willBeOccupied(sf::Vector2i(i, pos.y)))
+					return i;
+			return pos.x;
+			break;
+		case Taction::RIGHT:
+			for (size_t i = WIDTH - 1; i > pos.x; --i)
+				if ((board[i][pos.y] == 0 || board_moving[i][pos.y]) && !willBeOccupied(sf::Vector2i(i, pos.y)))
+					return i;
+			return pos.x;
+			break;
+	}
+
+	/*if (direction == Taction::UP) {
 		const int new_y = merge(pos, direction);
 		if (new_y != -1)
 			return new_y;
@@ -208,7 +370,7 @@ const int State::findFreeSpace(const sf::Vector2i& pos, const Taction& direction
 					return i;
 			return pos.x;
 		}
-	}
+	}*/
 }
 
 void State::addMoveInstructions(const sf::Vector2i& newPos, const sf::Vector2i& oldPos)
@@ -218,7 +380,7 @@ void State::addMoveInstructions(const sf::Vector2i& newPos, const sf::Vector2i& 
 	m_mergedTiles = false;
 }
 
-State::State(const size_t& width, const size_t& height) : WIDTH(width), HEIGHT(height)
+State::State(const int tiles, const size_t& width, const size_t& height) : WIDTH(width), HEIGHT(height), tiles(tiles), max_tiles(width * height)
 {
 	board = new int* [HEIGHT];
 	board_moving = new bool* [HEIGHT];
@@ -230,7 +392,7 @@ State::State(const size_t& width, const size_t& height) : WIDTH(width), HEIGHT(h
 	}
 }
 
-State::State(const State& other) : WIDTH(other.WIDTH), HEIGHT(other.HEIGHT)
+State::State(const State& other) : WIDTH(other.WIDTH), HEIGHT(other.HEIGHT), tiles(other.tiles), debug(other.debug), max_tiles(other.max_tiles)
 {
 	board = new int* [HEIGHT];
 	board_moving = new bool* [HEIGHT];
@@ -268,21 +430,53 @@ State::~State()
 
 int State::move(Taction direction)
 {
-	if (debug) {
-		if (direction == Taction::UP)
-			printf("\n\n\nMove direction: UP\n\n");
-		else if (direction == Taction::DOWN)
-			printf("\n\n\nMove direction: DOWN\n\n");
-		else if (direction == Taction::LEFT)
-			printf("\n\n\nMove direction: LEFT\n\n");
-		else if (direction == Taction::RIGHT)
-			printf("\n\n\nMove direction: RIGHT\n\n");
+	switch (direction) {
+	case Taction::UP:
+		for (int i = 0; i < WIDTH; ++i)
+			for (int j = 0; j < HEIGHT; ++j)
+				if (board[i][j] != 0) {
+					const sf::Vector2i new_pos{ i, findFreeSpace(sf::Vector2i(i, j), direction) };
+					const int distance = j - new_pos.y;
 
-		display("Board before:");
-		printf("\n");
+					if (distance > 0)
+						addMoveInstructions(new_pos, sf::Vector2i{ i, j });
+				}
+		break;
+	case Taction::DOWN:
+		for (int i = 0; i < WIDTH; ++i)
+			for (int j = HEIGHT - 1; j >= 0; --j)
+				if (board[i][j] != 0) {
+					const sf::Vector2i new_pos{ i, findFreeSpace(sf::Vector2i(i, j), direction) };
+					const int distance = new_pos.y - j;
+
+					if (distance > 0)
+						addMoveInstructions(new_pos, sf::Vector2i{ i, j });
+				}
+		break;
+	case Taction::LEFT:
+		for (int j = 0; j < HEIGHT; ++j)
+			for (int i = 0; i < WIDTH; ++i)
+				if (board[i][j] != 0) {
+					const sf::Vector2i new_pos{ findFreeSpace(sf::Vector2i(i, j), direction), j };
+					const int distance = i - new_pos.x;
+
+					if (distance > 0)
+						addMoveInstructions(new_pos, sf::Vector2i{ i, j });
+				}
+		break;
+	case Taction::RIGHT:
+		for (int j = 0; j < HEIGHT; ++j)
+			for (int i = WIDTH - 1; i >= 0; --i)
+				if (board[i][j] != 0) {
+					const sf::Vector2i new_pos{ findFreeSpace(sf::Vector2i(i, j), direction), j };
+					const int distance = new_pos.x - i;
+
+					if (distance > 0)
+						addMoveInstructions(new_pos, sf::Vector2i{ i, j });
+				}
+		break;
 	}
-
-	if (direction == Taction::UP) {
+	/*if (direction == Taction::UP) {
 		for (int i = 0; i < WIDTH; ++i)
 			for (int j = 0; j < HEIGHT; ++j)
 				if (board[i][j] != 0) {
@@ -325,7 +519,7 @@ int State::move(Taction direction)
 					if (distance > 0) 
 						addMoveInstructions(new_pos, sf::Vector2i{ i, j });
 				}
-	}
+	}*/
 
 	int reward = 0;
 
@@ -338,6 +532,7 @@ int State::move(Taction direction)
 			board[old_pos.x][old_pos.y] = 0;
 
 			reward += REWARDS[board[new_pos.x][new_pos.y]];
+			--tiles;
 		}
 		else {
 			const sf::Vector2i new_pos = m_moveInstructions[i]->getNewPos();
@@ -357,18 +552,90 @@ int State::move(Taction direction)
 	for (size_t i = 0; i < m_moveInstructions.size(); ++i)
 		delete m_moveInstructions[i];
 	m_moveInstructions.clear();
-
-	if (debug) {
-		display("Board after:");
-		printf("Reward: %d\n\n\n", reward);
-	}
 	
 	return reward;
 }
 
+std::vector<Taction>& State::getAvailableMoves() const
+{
+	std::vector<Taction> availableMoves;
+
+	for (size_t i = 0; i < WIDTH; ++i)
+		for (size_t j = HEIGHT - 1; j >= 1; --j)
+			if (board[i][j])
+				if (board[i][j] == board[i][j - 1] || board[i][j - 1] == 0) {
+					availableMoves.emplace_back(Taction::UP);
+					i = WIDTH;
+					break;
+				}
+
+	for (size_t i = 0; i < WIDTH; ++i)
+		for (size_t j = 0; j < HEIGHT - 1; ++j)
+			if (board[i][j])
+				if (board[i][j] == board[i][j + 1] || board[i][j + 1] == 0) {
+					availableMoves.emplace_back(Taction::DOWN);
+					i = WIDTH;
+					break;
+				}
+
+	for (size_t i = 0; i < HEIGHT; ++i)
+		for (size_t j = WIDTH - 1; j >= 1; --j)
+			if (board[j][i])
+				if (board[j][i] == board[j - 1][i] || board[j - 1][i] == 0) {
+					availableMoves.emplace_back(Taction::LEFT);
+					i = HEIGHT;
+					break;
+				}
+
+	for (size_t i = 0; i < HEIGHT; ++i)
+		for (size_t j = 0; j < WIDTH - 1; ++j)
+			if (board[j][i])
+				if (board[j][i] == board[j + 1][i] || board[j + 1][i] == 0) {
+					availableMoves.emplace_back(Taction::RIGHT);
+					i = HEIGHT;
+					break;
+				}
+
+	return availableMoves;
+}
+
 bool State::isMovePossible(Taction direction)
 {
-	if (direction == Taction::UP) {
+	switch (direction) {
+		case Taction::UP:
+			for (size_t i = 0; i < WIDTH; ++i)
+				for (size_t j = HEIGHT - 1; j >= 1 ; --j)
+					if (board[i][j])
+						if (board[i][j] == board[i][j - 1] || board[i][j - 1] == 0)
+							return true;
+			break;
+		case Taction::DOWN:
+			for (size_t i = 0; i < WIDTH; ++i)
+				for (size_t j = 0; j < HEIGHT - 1; ++j)
+					if (board[i][j])
+						if (board[i][j] == board[i][j + 1] || board[i][j + 1] == 0)
+							return true;
+			break;
+		case Taction::LEFT:
+			for (size_t i = 0; i < HEIGHT; ++i)
+				for (size_t j = WIDTH - 1; j >= 1; --j)
+					if (board[j][i])
+						if (board[j][i] == board[j - 1][i] || board[j - 1][i] == 0)
+							return true;
+			
+			break;
+		case Taction::RIGHT:
+			for (size_t i = 0; i < HEIGHT; ++i)
+				for (size_t j = 0; j < WIDTH - 1; ++j)
+					if (board[j][i])
+						if (board[j][i] == board[j + 1][i] || board[j + 1][i] == 0)
+							return true;
+			break;
+	}
+
+	return false;
+
+	/*if (direction == Taction::UP) {
 		for (int i = 0; i < WIDTH; ++i)
 			for (int j = 0; j < HEIGHT; ++j)
 				if (board[i][j] != 0) {
@@ -458,7 +725,7 @@ bool State::isMovePossible(Taction direction)
 				}
 	}
 
-	return false;
+	return false;*/
 }
 
 const void State::display(const std::string& text) const
@@ -477,18 +744,13 @@ const void State::display(const std::string& text) const
 
 const bool State::isTerminalState() const
 {
-	for (size_t i = 0; i < HEIGHT; ++i)
-		for (size_t j = 0; j < WIDTH; ++j)
-			if (board[j][i] == 0)
-				return false;
+	if (tiles < max_tiles)
+		return false;
 
 	for (size_t i = 0; i < HEIGHT - 1; ++i)
-		for (size_t j = 0; j < WIDTH - 1; ++j) {
-			if (board[j][i] == board[j + 1][i])
+		for (size_t j = 0; j < WIDTH - 1; ++j) 
+			if (board[j][i] == board[j + 1][i] || board[j][i] == board[j][i + 1])
 				return false;
-			if (board[j][i] == board[j][i + 1])
-				return false;
-		}
 
 	for (size_t i = 0; i < HEIGHT - 1; ++i)
 		if (board[WIDTH - 1][i] == board[WIDTH - 1][i + 1])

@@ -112,7 +112,7 @@ void Playground::clearBoard()
 	m_score = 0;
 	m_gui->setScore(0);
 	m_tileMatrix->clearBoard();
-	m_tileMatrix->spawn();
+	m_tileMatrix->spawn(2);
 }
 
 void Playground::render(sf::RenderTarget& target)

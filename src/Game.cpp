@@ -80,7 +80,7 @@ void Game::update() {
 					end_time = std::chrono::high_resolution_clock::now();
 					std::chrono::duration<double> elapsed_time = end_time - start_time;
 					measured_time += elapsed_time.count();
-					//std::cout << "Games: " << games << " | Time: " << measured_time << "s" << std::endl;
+					std::cout << "Games: " << games << " | Time: " << measured_time << "s" << std::endl;
 					start_time = std::chrono::high_resolution_clock::now();
 				}
 			}

@@ -1,2 +1,8 @@
 Przed optymalizacją:
 Games: 1000 | Time: 30.0951s ===> 1 game = 30,0951 ms ===> 33,23 games / s
+
+Po optymalizacji isMoveAvalible i zamianie if na switch:
+Games: 1000 | Time: 28.0623s ===> 1 game = 28,0623 ms ===> 35,63 games / s
+
+Po optymalizacji getAvalibleMoves:
+Games: 1000 | Time: 27.1754s ===> 1 game = 27,1754 ms ===> 36,78 games / s

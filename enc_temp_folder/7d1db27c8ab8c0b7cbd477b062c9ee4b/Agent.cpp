@@ -270,7 +270,7 @@ void Agent::update(const float dt)
 
 		Taction best_action = Taction::UP;
 
-		if (generateRandomFloat() < explorationRate && learningEnabled) {
+		if (generateRandomFloat() < explorationRate) {
 			std::vector<Taction> &possible_actions = current_state->getAvailableMoves();
 			/*for (size_t i = 0; i < 4; ++i) {
 				Taction action = static_cast<Taction>(i);

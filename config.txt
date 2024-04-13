@@ -2,10 +2,10 @@
 learningEnabled = "true"
 
 ## Learning rate of agent
-learningRate = "0.0025"
+learningRate = "0.01"
 
 ## Exploration rate of agent
-explorationRate = "0.00050"
+explorationRate = "0.001"
 
 ## If set to "true", logging will be enabled, and information about the number of steps, score, and maximum tile type will be logged to the "log.txt" file after each completed game.
 loggingEnabled = "true"
