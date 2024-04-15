@@ -7,7 +7,7 @@ class NTuples
 {
 private:
 	constexpr static size_t MIN_TYPE = 0;
-	constexpr static size_t MAX_TYPE = 12;
+	constexpr static size_t MAX_TYPE = 14;
 
 public:
 	constexpr static size_t NUM_VERTICAL = 4;

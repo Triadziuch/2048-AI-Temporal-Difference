@@ -100,14 +100,10 @@ inline float Agent::generateRandomFloat(float min, float max) const {
 
 
 // Logging functions
-void Agent::log(int score) const
+void Agent::log(int score)
 {
-	if (loggingEnabled) {
-		std::ofstream logFile;
-		logFile.open(logFilename, std::ios::app);
+	if (loggingEnabled)
 		logFile << total_games << ";" << total_steps << ";" << score << ";" << matrix->getMaxType() << std::endl;
-		logFile.close();
-	}
 }
 
 void Agent::displayProgress(int score) const
@@ -172,17 +168,16 @@ double Agent::getFunctionValue(const State* const state) const
 		for (size_t j = 0; j < state->WIDTH; ++j)
 			value += m_LUTs.V_LUT[i][state->board[0][j]][state->board[1][j]][state->board[2][j]][state->board[3][j]];
 
-
 	for (size_t i = 0; i < NTuples::NUM_HORIZONTAL; ++i)
 		for (size_t j = 0; j < state->HEIGHT; ++j)
 			value += m_LUTs.H_LUT[i][state->board[j][0]][state->board[j][1]][state->board[j][2]][state->board[j][3]];
 
-
 	size_t square_index = 0;
 	for (size_t i = 0; i < state->HEIGHT - 1; ++i)
-		for (size_t j = 0; j < state->WIDTH - 1; ++j)
+		for (size_t j = 0; j < state->WIDTH - 1; ++j) {
 			value += m_LUTs.SQUARE_LUT[square_index][state->board[i][j]][state->board[i][j + 1]][state->board[i + 1][j]][state->board[i + 1][j + 1]];
-	square_index++;
+			square_index++;
+		}
 
 	return value;
 }
@@ -243,6 +238,9 @@ Agent::Agent(Playground* playgroundPtr) : playground(playgroundPtr), matrix{ pla
 	loadConfig();
 	if (resumeLearning)
 		loadLatestLUTs();
+	
+	if (loggingEnabled)
+		logFile.open(logFilename, std::ios::app);
 }
 
 Agent::Agent(const Agent& other) : 
@@ -251,7 +249,11 @@ Agent::Agent(const Agent& other) :
 	std::srand(static_cast<unsigned int>(std::time(nullptr)));
 }
 
-Agent::~Agent() {}
+Agent::~Agent() 
+{
+	if (logFile.is_open())
+		logFile.close();
+}
 
 
 
@@ -270,13 +272,8 @@ void Agent::update(const float dt)
 
 		Taction best_action = Taction::UP;
 
-		if (generateRandomFloat() < explorationRate && learningEnabled) {
+		if (learningEnabled && generateRandomFloat() < explorationRate) {
 			std::vector<Taction> &possible_actions = current_state->getAvailableMoves();
-			/*for (size_t i = 0; i < 4; ++i) {
-				Taction action = static_cast<Taction>(i);
-				if (current_state->isMovePossible(action))
-					possible_actions.push_back(action);
-			}*/
 
 			if (!possible_actions.empty()) {
 				size_t random_index = std::rand() % possible_actions.size();

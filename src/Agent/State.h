@@ -19,7 +19,7 @@ class State
 private:
 	std::vector <Instructions*>	m_moveInstructions;
 
-	static constexpr int REWARDS[] = { 0, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096 };
+	static constexpr int REWARDS[] = { 0, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384 };
 
 	bool willBeOccupied(const sf::Vector2i& pos) const;
 	const int merge(const sf::Vector2i& pos, const Taction& direction);
@@ -29,7 +29,7 @@ private:
 
 	int tiles = 0;
 	int max_tiles{};
-	const int m_maxType = 4096;
+	const int m_maxType = 16384;
 	bool debug = false;
 
 public:

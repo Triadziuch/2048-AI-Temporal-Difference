@@ -24,6 +24,7 @@ private:
 	const std::string configFilename = "config.txt";
 
 	// Logging variables
+	std::ofstream logFile;
 	const std::string logFilename = "log.txt";
 	
 	// LUT logging variables
@@ -44,7 +45,7 @@ private:
 	float generateRandomFloat(float min = 0.f, float max = 1.f) const;
 
 	// Logging functions
-	void log(int score) const;
+	void log(int score);
 	void displayProgress(int score) const;
 
 	// Learning functions
