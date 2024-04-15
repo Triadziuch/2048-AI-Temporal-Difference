@@ -365,3 +365,7 @@ log.txt
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+/log LR=0.0025 ER=0.00025.txt
+/LUTs LR=0.01 ER=0.001.7z
+/Nowy Arkusz programu Microsoft Excel.xlsx
+/LUTs LR=0.0025 ER=0.00025.7z
