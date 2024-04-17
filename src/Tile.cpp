@@ -58,8 +58,12 @@ void Tile::instantMove(const sf::Vector2f& offset)
 	m_sprite.move(offset);
 }
 
-void Tile::startSpawning()
+void Tile::startSpawning(const float spawningTime)
 {
+	m_spawningTimeMax = spawningTime;
+	if (spawningTime <= 0.f)
+		return;
+	
 	m_spawningTime = 0.f;
 	m_isSpawning = true;
 	m_movementManager->linkScalingRoutine(m_sprite, "TILE_SPAWNING");

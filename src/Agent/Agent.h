@@ -6,7 +6,6 @@
 
 #include <filesystem>
 #include <random>
-#include <thread>
 
 class Agent
 {

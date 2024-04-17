@@ -4,7 +4,7 @@
 class Tile {
 private:
 	// Static variables
-	constexpr static float m_spawningTimeMax{ 0.f }, m_gameOverTimeMax{ 0.5f }, m_winTimeMax{ 0.5f };
+	float m_spawningTimeMax{ 0.25f }, m_gameOverTimeMax{ 0.5f }, m_winTimeMax{ 0.5f };
 
 	// Movement manager signleton instances
 	MovementContainer* m_movementContainer;
@@ -30,7 +30,7 @@ public:
 	// Functions
 	void smoothMove(const sf::Vector2f& offset, const float duration);
 	void instantMove(const sf::Vector2f& offset);
-	void startSpawning();
+	void startSpawning(const float spawningTime);
 	void startMerging();
 
 	void startGameOver();

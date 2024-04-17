@@ -22,9 +22,9 @@ void Agent::loadConfig()
 					learningEnabled = value == "true";
 
 					if (!learningEnabled) {
-						matrix->setTimeSpawning(0.01f);
-						matrix->setTimeMoving(0.01f);
-						matrix->setTimeMerging(0.01f);
+						matrix->setTimeSpawning(0.25f);
+						matrix->setTimeMoving(0.25f);
+						matrix->setTimeMerging(0.25f);
 					}
 					else {
 						matrix->setTimeSpawning(0.0f);
@@ -111,8 +111,6 @@ void Agent::displayProgress(int score) const
 	if (loggingEnabled)
 		printf("Games: %lld\tStep: %lld\tReward: %d\tMax type: %d\n", total_games, total_steps, static_cast<int>(score), matrix->getMaxType());
 }
-
-
 
 // Learning functions
 Taction Agent::chooseBestAction(const State* const state) const // EVALUATE(s) -> a

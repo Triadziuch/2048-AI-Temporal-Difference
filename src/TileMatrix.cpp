@@ -544,7 +544,7 @@ void TileMatrix::addTile(const sf::Vector2i& pos, const int type)
 	else {
 
 		m_matrix[pos.x][pos.y] = new Tile(type, m_textures[findID(type)], m_scale, calculateTilePos(pos), m_movementManager);
-		m_matrix[pos.x][pos.y]->startSpawning();
+		m_matrix[pos.x][pos.y]->startSpawning(m_timeSpawningMax);
 		++m_tiles;
 
 		m_isGameOver = isGameOver();
@@ -658,6 +658,7 @@ void TileMatrix::setAddedScore(const int value)
 void TileMatrix::setTimeSpawning(const float time)
 {
 	m_timeSpawningMax = time;
+	m_movementManager->getScalingRoutine("TILE_SPAWNING")->setMotionDuration(m_timeSpawningMax);
 }
 
 void TileMatrix::setTimeMoving(const float time)
@@ -668,6 +669,7 @@ void TileMatrix::setTimeMoving(const float time)
 void TileMatrix::setTimeMerging(const float time)
 {
 	m_timeMergingMax = time;
+	m_movementManager->getScalingRoutine("TILE_MERGING")->setMotionDuration(m_timeMergingMax);
 }
 
 State* const TileMatrix::getState() const
