@@ -11,4 +11,5 @@ public:
 	Transition();
 	Transition(int reward, State* afterstate, State* nextState);
 	Transition(const Transition& other);
+	~Transition();
 };

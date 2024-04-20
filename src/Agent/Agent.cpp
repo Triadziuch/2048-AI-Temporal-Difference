@@ -1,6 +1,7 @@
 #pragma once
 #include "Agent.h"
 
+// Utility functions
 void Agent::loadConfig()
 {
 	std::ifstream configFile(configFilename);
@@ -47,7 +48,6 @@ void Agent::loadConfig()
 	configFile.close();
 }
 
-// Utility functions
 void Agent::loadLatestLUTs()
 {
 	std::string path = logTupleFolder;
@@ -112,23 +112,21 @@ void Agent::displayProgress(int score) const
 		printf("Games: %lld\tStep: %lld\tReward: %d\tMax type: %d\n", total_games, total_steps, static_cast<int>(score), matrix->getMaxType());
 }
 
+
+
 // Learning functions
-Taction Agent::chooseBestAction(const State* const state) const // EVALUATE(s) -> a
+const Taction Agent::chooseBestAction(const State* const state, const std::vector<Taction>& available_actions) const // EVALUATE(s) -> a
 {
 	double bestValue = -std::numeric_limits<double>::infinity();
 	Taction bestAction = Taction::UP;
 
-	for (size_t i = 0; i < 4; ++i) {
+	for (const auto& action : available_actions) {
 		State* afterstate = new State(*state);
-		Taction action = static_cast<Taction>(i);
+		double value = static_cast<double>(afterstate->move(action)) + getFunctionValue(afterstate);
 
-		if (afterstate->isMovePossible(action)) {
-			double value = static_cast<double>(afterstate->move(action)) + getFunctionValue(afterstate);
-
-			if (value > bestValue) {
-				bestValue = value;
-				bestAction = action;
-			}
+		if (value > bestValue) {
+			bestValue = value;
+			bestAction = action;
 		}
 
 		delete afterstate;
@@ -137,20 +135,16 @@ Taction Agent::chooseBestAction(const State* const state) const // EVALUATE(s) -
 	return bestAction;
 }
 
-double Agent::getBestValueAction(const State* const state) const
+const double Agent::getBestValueAction(const State* const state, const std::vector<Taction>& available_actions) const
 {
 	double bestValue = -std::numeric_limits<double>::infinity();
 
-	for (size_t i = 0; i < 4; ++i) {
+	for (const auto& action : available_actions) {
 		State* afterstate = new State(*state);
-		Taction action = static_cast<Taction>(i);
+		double value = static_cast<double>(afterstate->move(action)) + getFunctionValue(afterstate);
 
-		if (afterstate->isMovePossible(action)) {
-			double value = static_cast<double>(afterstate->move(action)) + getFunctionValue(afterstate);
-
-			if (value > bestValue)
-				bestValue = value;
-		}
+		if (value > bestValue)
+			bestValue = value;
 
 		delete afterstate;
 	}
@@ -180,8 +174,9 @@ double Agent::getFunctionValue(const State* const state) const
 	return value;
 }
 
-void Agent::updateValueFunction(const State* const afterstate, double expectedValue, double learningRate)
+void Agent::updateValueFunction(const State* const afterstate, double expectedValue, double learningRate) // LEARN EVALUATION(s, a, r, s', s")
 {
+	// delta = (r + V(s') - V(s)) * alpha
 	double delta = (expectedValue - getFunctionValue(afterstate)) * learningRate;
 
 	for (size_t i = 0; i < NTuples::NUM_VERTICAL; ++i)
@@ -200,23 +195,16 @@ void Agent::updateValueFunction(const State* const afterstate, double expectedVa
 		}
 }
 
-Transition Agent::move(const State* const state, const Taction action) // MAKE MOVE(s, a) -> r, s', s"
+Transition* Agent::move(const State* const state, const Taction action) // MAKE MOVE(s, a) -> r, s', s"
 {
-	Transition transition;
-
 	ComputeAfterstateResult afterstate_result = computeAfterstate(state, action);
-	transition.reward = afterstate_result.reward;
-	transition.afterstate = afterstate_result.afterstate;
 
 	if (learningEnabled) 
 		matrix->instantMove(action);
 	else 
 		matrix->move(action);
 	
-
-	transition.nextState = getState();
-
-	return transition;
+	return new Transition{ afterstate_result.reward, afterstate_result.afterstate, getState() };
 }
 
 ComputeAfterstateResult Agent::computeAfterstate(const State* const state, const Taction action) // COMPUTE AFTERSTATE(s, a) -> r, s'
@@ -269,31 +257,27 @@ void Agent::update(const float dt)
 	if (!playground->getIsGameOver() && matrix->getIsIdle()) {
 
 		Taction best_action = Taction::UP;
+		std::vector<Taction>& possible_actions = current_state->getAvailableMoves();
 
-		if (learningEnabled && generateRandomFloat() < explorationRate) {
-			std::vector<Taction> &possible_actions = current_state->getAvailableMoves();
-
-			if (!possible_actions.empty()) {
-				size_t random_index = std::rand() % possible_actions.size();
-				best_action = possible_actions[random_index];
-			}
+		if (learningEnabled && generateRandomFloat() < explorationRate && !possible_actions.empty()) {
+			size_t random_index = std::rand() % possible_actions.size();
+			best_action = possible_actions[random_index];
 		}
 		else 
-			best_action = chooseBestAction(current_state);
+			best_action = chooseBestAction(current_state, possible_actions);
 			
-		Transition transition = move(current_state, best_action);
+		const Transition* const transition = move(current_state, best_action);
 
 		double correctActionValue = 0.0;
-		if (!transition.nextState->isTerminalState())
-			correctActionValue = getBestValueAction(transition.nextState);
+		if (!transition->nextState->isTerminalState())
+			correctActionValue = getBestValueAction(transition->nextState, possible_actions);
 
 		if (learningEnabled) {
-			updateValueFunction(transition.afterstate, correctActionValue, learningRate);
+			updateValueFunction(transition->afterstate, correctActionValue, learningRate);
 			++total_steps;
 		}
 
-		delete transition.afterstate;
-		delete transition.nextState;
+		delete transition;
 	}
 
 	delete current_state;

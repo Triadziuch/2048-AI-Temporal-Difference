@@ -48,13 +48,13 @@ private:
 	void displayProgress(int score) const;
 
 	// Learning functions
-	Taction chooseBestAction(const State* const state) const;
-	double getBestValueAction(const State* const state) const;
+	const Taction chooseBestAction(const State* const state, const std::vector<Taction>& available_actions) const;
+	const double getBestValueAction(const State* const state, const std::vector<Taction>& available_actions) const;
 
 	double getFunctionValue(const State* const state) const;
 	void updateValueFunction(const State* const afterstate, double expectedValue, double learningRate);
 
-	Transition move(const State* const state, const Taction action);
+	Transition* move(const State* const state, const Taction action);
 
 	ComputeAfterstateResult computeAfterstate(const State* const state, const Taction action);
 
