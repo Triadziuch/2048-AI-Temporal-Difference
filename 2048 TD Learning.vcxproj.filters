@@ -93,6 +93,18 @@
     <ClCompile Include="src\Agent\State.cpp">
       <Filter>Pliki źródłowe\Agent</Filter>
     </ClCompile>
+    <ClCompile Include="src\Agent\AgentTDState.cpp">
+      <Filter>Pliki źródłowe\Agent</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Agent\AgentQLearning.cpp">
+      <Filter>Pliki źródłowe\Agent</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Agent\AgentTDAfterstate.cpp">
+      <Filter>Pliki źródłowe\Agent</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Agent\AgentTD.cpp">
+      <Filter>Pliki źródłowe\Agent</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Game.h">
@@ -150,6 +162,18 @@
       <Filter>Pliki nagłówkowe\Agent</Filter>
     </ClInclude>
     <ClInclude Include="src\Agent\State.h">
+      <Filter>Pliki nagłówkowe\Agent</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Agent\AgentQLearning.h">
+      <Filter>Pliki nagłówkowe\Agent</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Agent\AgentTDAfterstate.h">
+      <Filter>Pliki nagłówkowe\Agent</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Agent\AgentTDState.h">
+      <Filter>Pliki nagłówkowe\Agent</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Agent\AgentTD.h">
       <Filter>Pliki nagłówkowe\Agent</Filter>
     </ClInclude>
   </ItemGroup>

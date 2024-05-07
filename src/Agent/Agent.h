@@ -9,7 +9,7 @@
 
 class Agent
 {
-private:
+protected:
 	Playground* playground;
 	TileMatrix* matrix;
 	NTuples m_LUTs;
@@ -48,11 +48,9 @@ private:
 	void displayProgress(int score) const;
 
 	// Learning functions
-	const Taction chooseBestAction(const State* const state, const std::vector<Taction>& available_actions) const;
 	const double getBestValueAction(const State* const state, const std::vector<Taction>& available_actions) const;
 
 	double getFunctionValue(const State* const state) const;
-	void updateValueFunction(const State* const afterstate, double expectedValue, double learningRate);
 
 	Transition* move(const State* const state, const Taction action);
 
@@ -64,9 +62,6 @@ public:
 	Agent(Playground* playgroundPtr);
 	Agent(const Agent& other);
 	~Agent();
-
-	// Update function
-	void update(const float dt);
 
 	// Public functions
 	void episodeEnded(int score);

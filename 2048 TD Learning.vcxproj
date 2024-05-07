@@ -137,6 +137,10 @@
   <ItemGroup>
     <ClCompile Include="src\2048 TD Learning.cpp" />
     <ClCompile Include="src\Agent\Agent.cpp" />
+    <ClCompile Include="src\Agent\AgentQLearning.cpp" />
+    <ClCompile Include="src\Agent\AgentTD.cpp" />
+    <ClCompile Include="src\Agent\AgentTDAfterstate.cpp" />
+    <ClCompile Include="src\Agent\AgentTDState.cpp" />
     <ClCompile Include="src\Agent\ComputeAfterstateResult.cpp" />
     <ClCompile Include="src\Agent\NTuples.cpp" />
     <ClCompile Include="src\Agent\State.cpp" />
@@ -158,6 +162,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Agent\Agent.h" />
+    <ClInclude Include="src\Agent\AgentQLearning.h" />
+    <ClInclude Include="src\Agent\AgentTD.h" />
+    <ClInclude Include="src\Agent\AgentTDAfterstate.h" />
+    <ClInclude Include="src\Agent\AgentTDState.h" />
     <ClInclude Include="src\Agent\ComputeAfterstateResult.h" />
     <ClInclude Include="src\Agent\NTuples.h" />
     <ClInclude Include="src\Agent\State.h" />

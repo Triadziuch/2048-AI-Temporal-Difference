@@ -1,5 +1,7 @@
 #pragma once
-#include "Agent/Agent.h"
+#include "Agent/AgentTDAfterstate.h"
+#include "Agent/AgentQLearning.h"
+#include "Agent/AgentTDState.h"
 #include "Playground.h"
 #include "StandardCursor.h"
 #include "AssetManager.h"
@@ -42,7 +44,7 @@ private:
 	double measured_time = 0;
 
 	// AI Agent
-	Agent *agent;
+	AgentTDState *agent;
 
 public:
 	// Constructors / Destructors

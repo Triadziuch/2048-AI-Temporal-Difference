@@ -260,12 +260,12 @@ State::State(const State& other) : WIDTH(other.WIDTH), HEIGHT(other.HEIGHT), til
 	board = new int* [HEIGHT];
 	board_moving = new bool* [HEIGHT];
 	board_merging = new bool* [HEIGHT];
+
 	for (size_t i = 0; i < HEIGHT; ++i) {
 		board[i] = new int[WIDTH];
 		board_moving[i] = new bool[WIDTH];
 		board_merging[i] = new bool[WIDTH];
 	}
-		
 
 	for (size_t i = 0; i < HEIGHT; ++i)
 		for (size_t j = 0; j < WIDTH; ++j) {
@@ -375,7 +375,7 @@ int State::move(Taction direction)
 	return reward;
 }
 
-std::vector<Taction>& State::getAvailableMoves() const
+std::vector<Taction> State::getAvailableMoves() const
 {
 	std::vector<Taction> availableMoves;
 
@@ -559,6 +559,40 @@ const void State::display(const std::string& text) const
 		printf("\n");
 	}
 	printf("\n");
+}
+
+const State* State::spawnTile(size_t x, size_t y, int value)
+{
+	if (x >= WIDTH || y >= HEIGHT || value > m_maxType)
+		return nullptr;
+
+	if (board[x][y] == 0) {
+		board[x][y] = value;
+		++tiles;
+	}
+
+	return this;
+}
+
+std::vector<std::pair<const State*, const State*>> State::getAllPossibleNextStates() const
+{
+	std::vector<std::pair<const State*, const State*>> nextStates;
+
+	for (size_t i = 0; i < HEIGHT; ++i)
+		for (size_t j = 0; j < WIDTH; ++j)
+			if (board[j][i] == 0) {
+				State* state2 = new State(*this), * state4 = new State(*this);
+
+				if (state2->spawnTile(j, i, 1) == nullptr || state4->spawnTile(j, i, 2) == nullptr) {
+					delete state2;
+					delete state4;
+					continue;
+				}
+				
+				nextStates.emplace_back(std::make_pair(state2, state4));
+			}
+
+	return nextStates;
 }
 
 const bool State::isTerminalState() const

@@ -1,11 +1,11 @@
 ## If "true", learning is enabled, and the agent will attempt to learn with the given learning rate and exploration rate. If "false", learning is disabled, and the agent will play using the policy from the latest trained model.
-learningEnabled = "false"
+learningEnabled = "true"
 
 ## Learning rate of agent
-learningRate = "0.0025"
+learningRate = "0.01"
 
 ## Exploration rate of agent
-explorationRate = "0.00025"
+explorationRate = "0.001"
 
 ## If set to "true", logging will be enabled, and information about the number of steps, score, and maximum tile type will be logged to the "log.txt" file after each completed game.
 loggingEnabled = "true"

@@ -41,10 +41,12 @@ public:
 	~State();
 
 	int move(Taction direction);
-	std::vector <Taction>& getAvailableMoves() const;
+	std::vector <Taction> getAvailableMoves() const;
 	bool isMovePossible(Taction direction);
 
 	const void display(const std::string& text = "") const;
+	const State* spawnTile(size_t x, size_t y, int value);
+	std::vector<std::pair<const State*, const State*>> getAllPossibleNextStates() const;
 
     const bool isTerminalState() const;
 

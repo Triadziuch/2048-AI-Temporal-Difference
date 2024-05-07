@@ -2,10 +2,11 @@
 #include <string>
 #include <sstream>
 #include <fstream>
+#include "State.h"
 
 class NTuples
 {
-private:
+protected:
 	constexpr static size_t MIN_TYPE = 0;
 	constexpr static size_t MAX_TYPE = 14;
 
@@ -20,4 +21,6 @@ public:
 
 	void save(const std::string& filename) const;
 	void load(const std::string& filename);
+
+	const void updateVFunction(const State* const state, const double& delta);
 };

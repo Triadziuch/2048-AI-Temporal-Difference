@@ -17,13 +17,14 @@ void Game::initVariables()
 {
 	srand(static_cast<unsigned>(time(nullptr)));
 	playground = new Playground({ static_cast<float>(WINDOW_WIDTH), static_cast<float>(WINDOW_HEIGHT) });
-	agent = new Agent(playground);
+	agent = new AgentTDState(playground);
 }
 
 void Game::initAssets()
 {
 	for(int i = 1; i < 13; i++)
 		AssetManager::GetTexture("assets/Textures/" + std::to_string(static_cast<int>(pow(2, i))) + ".png");
+
 	AssetManager::GetTexture("assets/Textures/button_newgame.png");
 	AssetManager::GetTexture("assets/Textures/button_score.png");
 }
