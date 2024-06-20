@@ -362,6 +362,7 @@ MigrationBackup/
 #LUTs
 LUTs/
 log.txt
+performance.txt
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
